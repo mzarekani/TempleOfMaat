@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Currently unused. Can be used if com.google.android.material:material:1.1.0 ever stops breaking shit.-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#ccf"/>
+    <item android:color="#fcc" android:state_focused="true"/>
+    <item android:color="#fcc" android:state_focused="false"/>
+    <item android:color="#cfc" android:state_hovered="true"/>
+    <item android:color="@color/text_input_layout_border"  android:state_enabled="true"/>
+    <item android:color="@color/text_input_layout_border"  android:state_enabled="false"/>
+    <item android:color="#fcc" android:state_pressed="false"/>
+    <item android:color="#fcc" android:state_window_focused="false"/>
+    <item android:color="#fcc" android:state_checked="false"/>
+</selector>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Judgment</string>
+    <string name="templeofmaat">Temple of Ma\'at</string>
+    <string name="categories">Categories</string>
+    <string name="category_new">New</string>
+    <string name="category_delete">Delete</string>
+
+    <string name="review_new">New</string>
+    <string name="review_name">Title</string>
+    <string name="review_comments">Comments</string>
+
+    <string name="restaurant_name">Restaurant</string>
+    <string name="stars">Rate It</string>
+    <string name="save">Save</string>
+    <string name="search_title">Search</string>
+</resources>

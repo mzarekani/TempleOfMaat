@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="templeofmaat.judgment.HomeActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+
+    android:orientation="vertical"
+
+
+    >
+    <TextView
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:keepScreenOn="true"
+        android:text="@string/templeofmaat"
+        android:textColor="@android:color/white"
+        android:textSize="45sp"
+        android:textStyle="bold" />
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="250dp"/>
+    <LinearLayout
+        android:id="@+id/fullscreen_content_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/category_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="@string/categories"
+            android:onClick="gotoCategoriesActivity"
+            android:layout_gravity="center"
+            android:theme="@style/DarkButton"/>
+
+    </LinearLayout>
+
+</LinearLayout>
