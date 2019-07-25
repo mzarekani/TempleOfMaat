@@ -1,4 +1,4 @@
-package templeofmaat.judgment;
+package templeofmaat.judgment.data;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import templeofmaat.judgment.data.Review;
 
 @Dao
 public interface ReviewDao {

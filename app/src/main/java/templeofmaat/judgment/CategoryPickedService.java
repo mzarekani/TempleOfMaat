@@ -6,19 +6,16 @@ import android.os.AsyncTask;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
 
+import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.Category;
 
-public class CategoryPickedService {
+class CategoryPickedService {
 
     private AppDatabase db;
-    private Context context;
 
     CategoryPickedService(Context context) {
-        this.context = context;
-        db = Room.databaseBuilder(context,
-                AppDatabase.class, "lykus").build();
+        db = AppDatabase.getAppDatabase(context);
     }
 
     LiveData<Category> getCategory(int id) {

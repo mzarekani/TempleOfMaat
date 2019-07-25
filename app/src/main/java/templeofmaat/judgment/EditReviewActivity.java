@@ -1,6 +1,5 @@
 package templeofmaat.judgment;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import templeofmaat.judgment.data.Category;
+import templeofmaat.judgment.data.Review;
 
 public class EditReviewActivity extends AppCompatActivity {
 

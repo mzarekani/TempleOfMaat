@@ -1,11 +1,9 @@
-package templeofmaat.judgment;
+package templeofmaat.judgment.data;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
-
-import templeofmaat.judgment.data.Category;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -35,9 +33,9 @@ public class Review {
     @ColumnInfo(name = Review.COLUMN_CATEGORY_ID)
     public int categoryId;
 
-    Review() {}
+    public Review() {}
 
-    Review(String name, Float rating, String comment, int categoryId) {
+    public Review(String name, Float rating, String comment, int categoryId) {
         this.name = name;
         this.rating = rating;
         this.comment = comment;

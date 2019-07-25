@@ -4,17 +4,15 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
 
-public class EditReviewService {
-    private Context context;
+import templeofmaat.judgment.data.AppDatabase;
+import templeofmaat.judgment.data.Review;
+
+class EditReviewService {
     private AppDatabase db;
 
     EditReviewService(Context context) {
-        this.context = context;
-
-        db = Room.databaseBuilder(context,
-                AppDatabase.class, "lykus").build();
+        db = AppDatabase.getAppDatabase(context);
     }
 
     LiveData<Review> getReview(final String name) {

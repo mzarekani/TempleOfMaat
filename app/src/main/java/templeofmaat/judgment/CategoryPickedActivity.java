@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer;
 import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,8 +26,7 @@ public class CategoryPickedActivity extends AppCompatActivity {
     private CategoryPickedService categoryPickedService;
     private String categoryName;
     private Category category;
-    private String NEW_CATEGORY;
-    private String DELETE_CATEGORY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +39,11 @@ public class CategoryPickedActivity extends AppCompatActivity {
         categoryName = extras.containsKey("Category") ? extras.getString("Category") : "Category";
         setTitle(categoryName);
 
-        NEW_CATEGORY = getString(R.string.category_new);
-        DELETE_CATEGORY = getString(R.string.category_delete);
 
-        cascadeLoadAndPopulate(categoryName);
+        loadAndPopulate(categoryName);
     }
 
-    private void cascadeLoadAndPopulate(String categoryName) {
+    private void loadAndPopulate(String categoryName) {
         loadCategory(categoryName);
     }
 
@@ -70,11 +66,11 @@ public class CategoryPickedActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<String> loadedReviews) {
                 List<String> reviews = new ArrayList<>();
-                reviews.add(NEW_CATEGORY);
+                reviews.add(getString(R.string.category_new));
                 if (loadedReviews != null) {
                     reviews.addAll(loadedReviews);
                 }
-                reviews.add(DELETE_CATEGORY);
+                reviews.add(getString(R.string.category_delete));
                 populate(reviews);
             }
         });
@@ -97,13 +93,13 @@ public class CategoryPickedActivity extends AppCompatActivity {
                 String reviewName = (String) categoryList.getItemAtPosition(position);
                 int reviewCount = categoryList.getAdapter().getCount();
                 // If User  Picked New
-                if (reviewName.equals(NEW_CATEGORY) && position == 0) {
+                if (reviewName.equals(getString(R.string.category_new)) && position == 0) {
                     Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
                     intent.putExtra("Category", categoryName);
                     intent.putExtra("category", category);
                     intent.putExtra("reviewName", reviewName);
                     startActivity(intent);
-                } else if (reviewName.equals(DELETE_CATEGORY) && position == reviewCount - 1) {
+                } else if (reviewName.equals(getString(R.string.category_delete)) && position == reviewCount - 1) {
                     deleteCategory();
                 } else {
                     Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);

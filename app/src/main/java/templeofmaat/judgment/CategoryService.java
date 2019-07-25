@@ -1,22 +1,20 @@
 package templeofmaat.judgment;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import java.util.List;
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
 
+import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.Category;
 
-public class CategoryService {
+class CategoryService {
 
-    private AppDatabase db;
     private Context context;
+    private AppDatabase db;
 
     CategoryService(Context context) {
         this.context = context;
-        db = Room.databaseBuilder(context,
-                AppDatabase.class, "lykus").build();
+        db = AppDatabase.getAppDatabase(context);
     }
 
     LiveData<List<Category>> getAllCategories() {
@@ -28,12 +26,10 @@ public class CategoryService {
     }
 
     void insertCategory(final Category category) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                db.categoryDao().insert(category);
-            }
-        });
+        db.categoryDao().insert(category);
     }
 
+    boolean doesDatabaseExist() {
+        return context.getDatabasePath(AppDatabase.DATABASE_NAME).exists();
+    }
 }

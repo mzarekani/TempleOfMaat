@@ -20,6 +20,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/_name"
                 style="@style/EditText"
+                android:inputType="textCapWords"
                 android:hint="@string/review_name"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"/>
