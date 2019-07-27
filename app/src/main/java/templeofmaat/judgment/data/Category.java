@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity(tableName = Category.TABLE_CATEGORY, indices = {@Index(value = Category.COLUMN_NAME,
+@Entity(tableName = Category.TABLE_NAME, indices = {@Index(value = Category.COLUMN_NAME,
         unique = true)})
 public class Category implements Serializable {
 
-    static final String TABLE_CATEGORY = "category";
+    static final String TABLE_NAME = "category";
     static final String COLUMN_NAME = "name";
 
     @PrimaryKey(autoGenerate = true)

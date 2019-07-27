@@ -13,13 +13,13 @@ import androidx.room.Update;
 @Dao
 public interface CategoryDao {
 
-    @Query("SELECT * FROM " + Category.TABLE_CATEGORY + " WHERE id = :id")
+    @Query("SELECT * FROM " + Category.TABLE_NAME + " WHERE id = :id")
     LiveData<Category> getCategory(int id);
 
-    @Query("SELECT * FROM " + Category.TABLE_CATEGORY + " WHERE " + Category.COLUMN_NAME + " = :name")
+    @Query("SELECT * FROM " + Category.TABLE_NAME + " WHERE " + Category.COLUMN_NAME + " = :name")
     LiveData<Category> getCategory(String name);
 
-    @Query("SELECT * FROM " + Category.TABLE_CATEGORY)
+    @Query("SELECT * FROM " + Category.TABLE_NAME)
     LiveData<List<Category>> getAllCategories();
 
     @Query("SELECT name FROM category")

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="templeofmaat.judgment.CategoryActivity"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
 
     <ListView
+        android:id="@+id/categoryList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:textColor="@color/white"
-        android:id="@+id/categoryList">
+        android:textColor="@color/white">
     </ListView>
 
-</FrameLayout>
+</LinearLayout>

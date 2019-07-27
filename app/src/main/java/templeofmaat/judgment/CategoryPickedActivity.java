@@ -17,15 +17,18 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.Category;
+import templeofmaat.judgment.data.ReviewEssentials;
 
 public class CategoryPickedActivity extends AppCompatActivity {
 
-    private ArrayAdapter categoryListAdapter;
     private ListView categoryList;
     private CategoryPickedService categoryPickedService;
     private String categoryName;
     private Category category;
+    private AppDatabase db;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class CategoryPickedActivity extends AppCompatActivity {
         categoryName = extras.containsKey("Category") ? extras.getString("Category") : "Category";
         setTitle(categoryName);
 
-
+        db = AppDatabase.getAppDatabase(this);
         loadAndPopulate(categoryName);
     }
 
@@ -61,25 +64,25 @@ public class CategoryPickedActivity extends AppCompatActivity {
     }
 
     private void loadReviews(int categoryId) {
-        final LiveData<List<String>> reviews = categoryPickedService.getAllNamesForCategory(categoryId);
-        reviews.observe(this, new Observer<List<String>>() {
+        final LiveData<List<ReviewEssentials>> reviews = db.reviewDao().getReviewEssentialsForCategory(categoryId);
+        reviews.observe(this, new Observer<List<ReviewEssentials>>() {
             @Override
-            public void onChanged(@Nullable List<String> loadedReviews) {
-                List<String> reviews = new ArrayList<>();
-                reviews.add(getString(R.string.category_new));
+            public void onChanged(@Nullable List<ReviewEssentials> loadedReviews) {
+                List<ReviewEssentials> reviews = new ArrayList<>();
+                reviews.add(new ReviewEssentials(getString(R.string.category_new), categoryName));
                 if (loadedReviews != null) {
                     reviews.addAll(loadedReviews);
                 }
-                reviews.add(getString(R.string.category_delete));
+                reviews.add(new ReviewEssentials(getString(R.string.category_delete), categoryName));
                 populate(reviews);
             }
         });
 
     }
 
-    private void populate(List<String> reviews) {
+    private void populate(List<ReviewEssentials> reviews) {
         categoryList = findViewById(R.id.reviewList);
-        categoryListAdapter = new ArrayAdapter<>(getApplicationContext(),
+        ArrayAdapter categoryListAdapter = new ArrayAdapter<>(getApplicationContext(),
                 R.layout.mytextview, R.id.textview_1, reviews);
         categoryList.setAdapter(categoryListAdapter);
         addOnItemClickListener();
@@ -90,21 +93,18 @@ public class CategoryPickedActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
-                String reviewName = (String) categoryList.getItemAtPosition(position);
+                ReviewEssentials reviewEssentials = (ReviewEssentials) categoryList.getItemAtPosition(position);
                 int reviewCount = categoryList.getAdapter().getCount();
                 // If User  Picked New
-                if (reviewName.equals(getString(R.string.category_new)) && position == 0) {
+                if (reviewEssentials.getName().equals(getString(R.string.category_new)) && position == 0) {
                     Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
-                    intent.putExtra("Category", categoryName);
-                    intent.putExtra("category", category);
-                    intent.putExtra("reviewName", reviewName);
+                    intent.putExtra("review", reviewEssentials);
                     startActivity(intent);
-                } else if (reviewName.equals(getString(R.string.category_delete)) && position == reviewCount - 1) {
+                } else if (reviewEssentials.getName().equals(getString(R.string.category_delete)) && position == reviewCount - 1) {
                     deleteCategory();
                 } else {
                     Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
-                    intent.putExtra("category", category);
-                    intent.putExtra("reviewName", reviewName);
+                    intent.putExtra("review", reviewEssentials);
                     startActivity(intent);
                 }
             }
@@ -115,7 +115,6 @@ public class CategoryPickedActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this,  R.style.AlertDialog);
         builder.setTitle("Confirm");
         builder.setMessage("Are you sure you want to delete " + categoryName + "? Your reviews for this category will be lost.");
-        // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

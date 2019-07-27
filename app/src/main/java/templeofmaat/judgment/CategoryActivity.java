@@ -113,7 +113,6 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<String> loadedCategories) {
                 List<String> categories = new ArrayList<>();
-
                 categories.add("New");
                 if (loadedCategories != null) {
                     categories.addAll(loadedCategories);
