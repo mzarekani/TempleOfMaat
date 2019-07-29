@@ -48,12 +48,12 @@
         <item name="android:background">@color/black</item>
     </style>
 
-    <!-- Dark Buttons -->
     <style name="DarkButton" parent="ThemeOverlay.MaterialComponents.Dark">
         <item name="colorAccent">@color/black</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:backgroundTint">@color/blue_grey_700</item>
     </style>
+
 
     <!-- Text -->
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -74,7 +74,6 @@
         <item name="boxStrokeColor">@color/text_input_layout</item>
     </style>
 
-    <!-- Text -->
     <style name="TextInputLayoutTitle" parent="Widget.Design.TextInputLayout">
         <item name="hintTextAppearance">@style/TextInputLayoutHint</item>
 
@@ -96,7 +95,8 @@
     <style name="EditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">12sp</item>
-
+        <item name="android:maxEms">20</item>
+        <item name="android:minEms">10</item>
     </style>
 
     <style name="TextInputLayoutHint">
@@ -107,5 +107,11 @@
     <style name="Text">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textCursorDrawable">@null</item>
+    </style>
+
+    <style name="RatingBar" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:progressTint">@color/holo_blue_dark</item>
+        <item name="android:progressBackgroundTint">@color/periwinkle</item>
+        <item name="android:secondaryProgressTint">@color/white</item>
     </style>
 </resources>

@@ -16,6 +16,7 @@
     <color name="blue_grey_900">#263238</color>
     <color name="black">#a9a9a9</color>
     <color name="holo_blue_dark">@android:color/holo_blue_dark</color>
+    <color name="holo_red_dark">@android:color/holo_red_dark</color>
     <color name="periwinkle">#CCCCFF</color>
     <color name="pink">#607D8B</color>
     <color name="tuna">#37373A</color>
