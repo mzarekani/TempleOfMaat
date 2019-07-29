@@ -3,11 +3,12 @@ package templeofmaat.judgment.data;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(tableName = Review.TABLE_NAME,
+@Entity(tableName = Review.TABLE_NAME, indices = {@Index(value = Category.COLUMN_NAME)},
         foreignKeys = @ForeignKey(entity = Category.class, parentColumns = "id",
                 childColumns = "categoryId", onDelete = CASCADE))
 public class Review {
@@ -19,19 +20,19 @@ public class Review {
     static final String COLUMN_CATEGORY_ID = "categoryId";
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    private int id;
 
     @ColumnInfo(name = Review.COLUMN_NAME)
-    public String name;
+    private String name;
 
     @ColumnInfo(name = Review.COLUMN_RATING)
-    public float rating;
+    private float rating;
 
     @ColumnInfo(name = Review.COLUMN_COMMENT)
-    public String comment;
+    private String comment;
 
     @ColumnInfo(name = Review.COLUMN_CATEGORY_ID)
-    public int categoryId;
+    private int categoryId;
 
     public Review() {}
 
@@ -72,5 +73,13 @@ public class Review {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 }

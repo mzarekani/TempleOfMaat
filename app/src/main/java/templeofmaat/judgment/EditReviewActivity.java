@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -87,23 +88,27 @@ public class EditReviewActivity extends AppCompatActivity {
         });
     }
 
-    public void addListeners() {
+    private void addListeners() {
         Button saveButton = findViewById(R.id.saveButton);
         Button deleteButton = findViewById(R.id.deleteButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (reviewEssentials.getName().equals(getString(R.string.review_new))) {
-                    review = new Review(nameView.getText().toString(), starRatingView.getRating(), commentView.getText().toString(), category.getId());
-                    editReviewService.saveReview(review);
-                    Log.i(TAG, "Created New Review " + review.getName() + " for category " + category.getName());
-                } else {
-                    review.setName(nameView.getText().toString());
-                    review.setRating(starRatingView.getRating());
-                    review.setComment(commentView.getText().toString());
-                    editReviewService.updateReview(review);
-                    Log.i(TAG, "Updated Review " + review.getName() + " for category " + category.getName());
+                String name = nameView.getText().toString().trim();
+                String comment = commentView.getText().toString().trim();
+                if (validateName(name)) {
+                    if (reviewEssentials.getName().equals(getString(R.string.review_new))) {
+                        review = new Review(name, starRatingView.getRating(), comment, category.getId());
+                        editReviewService.saveReview(review);
+                        Log.i(TAG, "Created New Review " + name + " for category " + category.getName());
+                    } else {
+                        review.setName(name);
+                        review.setRating(starRatingView.getRating());
+                        review.setComment(comment);
+                        editReviewService.updateReview(review);
+                        Log.i(TAG, "Updated Review " + name + " for category " + category.getName());
+                    }
+                    finish();
                 }
-                finish();
             }
         });
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -113,5 +118,18 @@ public class EditReviewActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private boolean validateName(String name) {
+        boolean newNameValid = false;
+        if (name.isEmpty()) {
+            Toast.makeText(this,
+                    "Name can't be empty", Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            newNameValid = true;
+        }
+
+        return newNameValid;
     }
 }

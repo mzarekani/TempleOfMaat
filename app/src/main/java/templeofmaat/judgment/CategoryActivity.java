@@ -1,10 +1,13 @@
 package templeofmaat.judgment;
 
 import androidx.appcompat.app.AlertDialog;
+
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
@@ -37,6 +40,7 @@ public class CategoryActivity extends AppCompatActivity {
     CategoryService categoryService;
     private ArrayAdapter categoryListAdapter;
     private ListView categoryList;
+    List<String> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +96,10 @@ public class CategoryActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String newCategory = input.getText().toString();
-                new AsyncTaskInsert(CategoryActivity.this).execute(new Category(newCategory));
-                populate();
+                String newCategory = input.getText().toString().trim();
+                if (validateNewCategory(newCategory)) {
+                    new AsyncTaskInsert(CategoryActivity.this).execute(new Category(newCategory));
+                }
             }
         });
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -106,13 +111,34 @@ public class CategoryActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private boolean validateNewCategory(final String newCategory) {
+        boolean newCategoryValid = false;
+        if (newCategory.isEmpty()) {
+            Toast.makeText(this,
+                    "Category name can't be blank", Toast.LENGTH_LONG)
+                    .show();
+        } else if (newCategory.length() > 40) {
+            Toast.makeText(this,
+                    "Name must be under 40 characters.", Toast.LENGTH_LONG)
+                    .show();
+        } else if(categories.contains(newCategory)) {
+            Toast.makeText(this,
+                    "Category already exists", Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            newCategoryValid = true;
+        }
+
+        return newCategoryValid;
+    }
+
     public void populate(){
         categoryList = findViewById(R.id.categoryList);
-        final LiveData<List<String>> categories = categoryService.getAllLabels();
-        categories.observe(this, new Observer<List<String>>() {
+        final LiveData<List<String>> liveCategories = categoryService.getAllLabels();
+        liveCategories.observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(@Nullable List<String> loadedCategories) {
-                List<String> categories = new ArrayList<>();
+                categories = new ArrayList<>();
                 categories.add("New");
                 if (loadedCategories != null) {
                     categories.addAll(loadedCategories);
@@ -148,8 +174,8 @@ public class CategoryActivity extends AppCompatActivity {
         protected Boolean doInBackground(Category... category) {
             try {
                 categoryActivityWeakReference.get().categoryService.insertCategory(category[0]);
-            } catch (SQLiteConstraintException exception) {
-                Log.i(TAG, "Category already exists", exception);
+            } catch (SQLiteException exception) {
+                Log.e(TAG, "Error Creating New Category", exception);
                 return false;
             }
 
@@ -159,13 +185,10 @@ public class CategoryActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
             if (!result) {
                 CategoryActivity categoryActivity = categoryActivityWeakReference.get();
                 if (categoryActivity != null) {
-                    Toast.makeText(categoryActivity,
-                            "Category already exists", Toast.LENGTH_LONG)
-                            .show();
+                    categoryActivity.populate();
                 }
             }
         }
