@@ -6,7 +6,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar"  parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -29,7 +29,6 @@
     </style>
 
     <style name="Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
-        <!--<item name="backgroundTint">@color/transparent</item>-->
         <item name="rippleColor">@color/colorAccent</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">14sp</item>
@@ -37,9 +36,7 @@
     </style>
 
     <style name="Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
-        <!--<item name="backgroundTint">@color/transparent</item>-->
         <item name="rippleColor">@color/colorAccent</item>
-        <!--<item name="android:textColor">@color/gray_dark</item>-->
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -113,5 +110,11 @@
         <item name="android:progressTint">@color/holo_blue_dark</item>
         <item name="android:progressBackgroundTint">@color/periwinkle</item>
         <item name="android:secondaryProgressTint">@color/white</item>
+    </style>
+
+    <style name="CategorySpinner" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:textColor">@color/text_default</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@drawable/spinner_selector</item>
     </style>
 </resources>

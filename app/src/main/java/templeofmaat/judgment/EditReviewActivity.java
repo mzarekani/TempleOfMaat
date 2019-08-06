@@ -55,7 +55,8 @@ public class EditReviewActivity extends AppCompatActivity {
         if (!reviewEssentials.getName().equals(getString(R.string.review_new))){
             loadReview();
         }
-        addListeners();
+
+        setUpListeners();
     }
 
     private void loadCategory() {
@@ -88,7 +89,7 @@ public class EditReviewActivity extends AppCompatActivity {
         });
     }
 
-    private void addListeners() {
+    private void setUpListeners() {
         Button saveButton = findViewById(R.id.saveButton);
         Button deleteButton = findViewById(R.id.deleteButton);
         saveButton.setOnClickListener(new View.OnClickListener() {

@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Category.class, Review.class}, version = AppDatabase.VERSION_NUMBER)
 public abstract class AppDatabase extends RoomDatabase {
-    static final int VERSION_NUMBER = 2;
+    static final int VERSION_NUMBER = 3;
     public static final String DATABASE_NAME = "user";
 
     private static AppDatabase INSTANCE;
@@ -22,7 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             INSTANCE =
                     Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .build();
         }
         return INSTANCE;
@@ -36,6 +36,13 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase db) {
             db.execSQL("CREATE INDEX IF NOT EXISTS index_review_name ON review (name) ");
+        }
+    };
+
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE " + Category.TABLE_NAME + " ADD type TEXT ");
         }
     };
 }

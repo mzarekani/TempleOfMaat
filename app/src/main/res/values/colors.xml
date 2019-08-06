@@ -5,6 +5,7 @@
     <color name="colorAccent">@color/white</color>
 
     <color name="background">@color/tuna</color>
+    <color name="text_default">@color/white</color>
     <color name="text_input_layout_border">@color/periwinkle</color>
     <color name="text_input_hint">@color/periwinkle</color>
 
@@ -21,6 +22,7 @@
     <color name="pink">#607D8B</color>
     <color name="tuna">#37373A</color>
     <color name="white">#fbffffff</color>
+    <color name="green">#2C635F</color>
 
     <!--This override is for textinputlayout. At this time com.google.android.material:material:1.1.0 allows a cleaner fix for this but breaks other features.-->
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/text_input_layout_border</color>
