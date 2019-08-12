@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Judgment</string>
+    <string name="app_name">@string/templeofmaat</string>
     <string name="templeofmaat">Temple of Ma\'at</string>
 
     <string name="categories">Categories</string>

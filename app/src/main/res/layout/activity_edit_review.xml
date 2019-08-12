@@ -6,32 +6,25 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical" >
-    <Space
-        android:layout_width="1dp"
-        android:layout_height="10dp" />
-    <LinearLayout
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:theme="@style/TextInputLayoutTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginHorizontal="@dimen/activity_vertical_margin" >
-        <com.google.android.material.textfield.TextInputLayout
-            android:theme="@style/TextInputLayoutTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/_name"
-                style="@style/EditText"
-                android:inputType="textCapWords"
-                android:maxLength="75"
-                android:hint="@string/review_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp" />
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
+    <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/_name"
+            style="@style/EditText"
+            android:inputType="textCapWords"
+            android:maxLength="75"
+            android:hint="@string/review_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,8 +40,9 @@
         style="@style/TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/activity_vertical_margin" >
-        <com.google.android.material.textfield.TextInputEditText
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
+    <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/review"
             style="@style/EditText"
             android:hint="@string/review_comments"
@@ -61,9 +55,6 @@
             android:minLines="4"
             android:maxLines="8" />
     </com.google.android.material.textfield.TextInputLayout>
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

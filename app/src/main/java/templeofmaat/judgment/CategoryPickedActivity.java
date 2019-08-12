@@ -1,7 +1,9 @@
 package templeofmaat.judgment;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
@@ -9,12 +11,13 @@ import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import templeofmaat.judgment.data.AppDatabase;
@@ -34,6 +37,8 @@ public class CategoryPickedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_picked);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         categoryPickedService = new CategoryPickedService(this);
 
@@ -68,13 +73,9 @@ public class CategoryPickedActivity extends AppCompatActivity {
         reviews.observe(this, new Observer<List<ReviewEssentials>>() {
             @Override
             public void onChanged(@Nullable List<ReviewEssentials> loadedReviews) {
-                List<ReviewEssentials> reviews = new ArrayList<>();
-                reviews.add(new ReviewEssentials(getString(R.string.category_new), categoryName));
                 if (loadedReviews != null) {
-                    reviews.addAll(loadedReviews);
+                    populate(loadedReviews);
                 }
-                reviews.add(new ReviewEssentials(getString(R.string.category_delete), categoryName));
-                populate(reviews);
             }
         });
 
@@ -94,19 +95,9 @@ public class CategoryPickedActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
                 ReviewEssentials reviewEssentials = (ReviewEssentials) categoryList.getItemAtPosition(position);
-                int reviewCount = categoryList.getAdapter().getCount();
-                // If User  Picked New
-                if (reviewEssentials.getName().equals(getString(R.string.category_new)) && position == 0) {
-                    Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
-                    intent.putExtra("review", reviewEssentials);
-                    startActivity(intent);
-                } else if (reviewEssentials.getName().equals(getString(R.string.category_delete)) && position == reviewCount - 1) {
-                    deleteCategory();
-                } else {
-                    Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
-                    intent.putExtra("review", reviewEssentials);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
+                intent.putExtra("review", reviewEssentials);
+                startActivity(intent);
             }
         });
     }
@@ -129,6 +120,32 @@ public class CategoryPickedActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+
+        menu.add(getString(R.string.category_new));
+        menu.add(getString(R.string.category_delete));
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (item.getTitle().equals(getString(R.string.category_new))) {
+            Intent intent = new Intent(CategoryPickedActivity.this, EditReviewActivity.class);
+            intent.putExtra("review", new ReviewEssentials(getString(R.string.category_new), categoryName));
+            startActivity(intent);
+        } else if (item.getTitle().equals(getString(R.string.category_delete))) {
+            deleteCategory();
+        }
+
+        return true;
     }
 
     @Override

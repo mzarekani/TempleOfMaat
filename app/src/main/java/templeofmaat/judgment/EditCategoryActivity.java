@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.View;
@@ -39,6 +40,8 @@ public class EditCategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_category);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         nameView = findViewById(R.id._name);
 
@@ -58,7 +61,6 @@ public class EditCategoryActivity extends AppCompatActivity {
         categoryTypes = Stream.of(CategoryTypes.values())
                 .map(CategoryTypes::getDisplayName)
                 .collect(Collectors.toList());
-        categoryTypeSpinner = findViewById(R.id.selectTypeSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,  R.layout.spinner_text_view, categoryTypes) {
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
@@ -72,6 +74,7 @@ public class EditCategoryActivity extends AppCompatActivity {
             }
         };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categoryTypeSpinner = findViewById(R.id.selectTypeSpinner);
         categoryTypeSpinner.setAdapter(adapter);
     }
 

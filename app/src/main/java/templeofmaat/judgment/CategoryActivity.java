@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,12 +17,15 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import templeofmaat.judgment.data.Category;
+import templeofmaat.judgment.data.ReviewEssentials;
 
 
 public class CategoryActivity extends AppCompatActivity {
@@ -36,6 +41,8 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
         setTitle("Categories");
 
         categoryList = findViewById(R.id.categoryList);
@@ -65,17 +72,9 @@ public class CategoryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
                 String itemValue = (String) categoryList.getItemAtPosition(position);
-                // If User  Picked New
-                if (position == 0) {
-                    Intent intent = new Intent(CategoryActivity.this, EditCategoryActivity.class);
-                    intent.putStringArrayListExtra("categories", categories);
-                    startActivity(intent);
-                  //  createNewCategory();
-                } else {
-                    Intent intent = new Intent(CategoryActivity.this, CategoryPickedActivity.class);
-                    intent.putExtra("Category", itemValue);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(CategoryActivity.this, CategoryPickedActivity.class);
+                intent.putExtra("Category", itemValue);
+                startActivity(intent);
             }
         });
     }
@@ -85,15 +84,13 @@ public class CategoryActivity extends AppCompatActivity {
         liveCategories.observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(@Nullable List<String> loadedCategories) {
-                categories = new ArrayList<>();
-                categories.add("New");
                 if (loadedCategories != null) {
+                    categories = new ArrayList<>();
                     categories.addAll(loadedCategories);
+                    categoryListAdapter = new ArrayAdapter<>(getApplicationContext(),
+                            R.layout.mytextview, R.id.textview_1, categories);
+                    categoryList.setAdapter(categoryListAdapter);
                 }
-                categoryListAdapter = new ArrayAdapter<>(getApplicationContext(),
-                        R.layout.mytextview, R.id.textview_1, categories);
-                categoryList.setAdapter(categoryListAdapter);
-
             }
         });
     }
@@ -102,6 +99,29 @@ public class CategoryActivity extends AppCompatActivity {
         new AsyncTaskInsert(CategoryActivity.this).execute(new Category("Restaurants", CategoryTypes.REVIEW.getDisplayName()));
         new AsyncTaskInsert(CategoryActivity.this).execute(new Category("Books", CategoryTypes.REVIEW.getDisplayName()));
         populate();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        menu.add(getString(R.string.category_new));
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (item.getTitle().equals(getString(R.string.category_new))) {
+            Intent intent = new Intent(CategoryActivity.this, EditCategoryActivity.class);
+            intent.putStringArrayListExtra("categories", categories);
+            startActivity(intent);
+        }
+
+        return true;
     }
 
     @Override

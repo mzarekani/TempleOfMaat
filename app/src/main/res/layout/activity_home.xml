@@ -5,6 +5,9 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical">
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
     <TextView
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
@@ -16,7 +19,6 @@
         android:textColor="@android:color/white"
         android:textSize="45sp"
         android:textStyle="bold" />
-
     <Space
         android:layout_width="1dp"
         android:layout_height="250dp"/>
@@ -26,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical">
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/category_button"
             android:layout_width="200dp"
@@ -35,7 +36,5 @@
             android:onClick="gotoCategoriesActivity"
             android:layout_gravity="center"
             android:theme="@style/DarkButton"/>
-
     </LinearLayout>
-
 </LinearLayout>
