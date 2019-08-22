@@ -1,13 +1,13 @@
 package templeofmaat.judgment;
 
-public enum CategoryTypes {
+public enum CategoryType {
     SELECT("Select Category Type..."),
     REVIEW("Review"),
     NOTE("Note");
 
     private String displayName;
 
-    CategoryTypes(String displayName) {
+    CategoryType(String displayName) {
         this.displayName = displayName;
     }
 

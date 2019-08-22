@@ -32,7 +32,6 @@ public class CategoryPickedActivity extends AppCompatActivity {
     private Category category;
     private AppDatabase db;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

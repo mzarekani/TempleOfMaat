@@ -30,8 +30,7 @@
         </activity>
         <activity android:name=".CategoryPickedActivity" />
         <activity
-            android:name=".EditCategoryActivity"
-            android:label="@string/edit_category_new" />
+            android:name=".EditCategoryActivity"/>
         <activity android:name=".EditReviewActivity" />
         <activity android:name=".SearchActivity">
             <intent-filter>

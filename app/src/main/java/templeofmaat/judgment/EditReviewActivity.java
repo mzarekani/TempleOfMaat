@@ -93,8 +93,20 @@ public class EditReviewActivity extends AppCompatActivity {
     }
 
     private void setUpListeners() {
-        Button saveButton = findViewById(R.id.saveButton);
+        onSave();
         Button deleteButton = findViewById(R.id.deleteButton);
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                editReviewService.deleteReview(review);
+                Log.i(TAG, "Deleted Review " + review.getName() + " for category " + category.getName());
+                finish();
+            }
+        });
+    }
+
+    private void onSave() {
+        Button saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String name = nameView.getText().toString().trim();
@@ -113,13 +125,6 @@ public class EditReviewActivity extends AppCompatActivity {
                     }
                     finish();
                 }
-            }
-        });
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                editReviewService.deleteReview(review);
-                Log.i(TAG, "Deleted Review " + review.getName() + " for category " + category.getName());
-                finish();
             }
         });
     }

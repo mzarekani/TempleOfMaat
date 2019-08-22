@@ -3,14 +3,19 @@
     <string name="templeofmaat">Temple of Ma\'at</string>
 
     <string name="categories">Categories</string>
+    <string name="category">Category</string>
     <string name="category_new">New</string>
+    <string name="category_edit">Edit</string>
     <string name="category_delete">Delete</string>
     <string name="edit_category_new">New Category</string>
     <string name="edit_category_cancel">Cancel</string>
 
+    <string name="review">Review</string>
     <string name="review_new">New</string>
     <string name="review_name">Title</string>
     <string name="review_comments">Comments</string>
+
+    <string name="category_and_review">Both</string>
 
     <string name="restaurant_name">Restaurant</string>
     <string name="stars">Rate It</string>
