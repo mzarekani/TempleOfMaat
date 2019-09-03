@@ -42,7 +42,7 @@ public class EditReviewActivity extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        nameView = findViewById(R.id._name);
+        nameView = findViewById(R.id.title);
         commentView = findViewById(R.id.review);
         starRatingView = findViewById(R.id.stars);
 

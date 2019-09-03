@@ -30,7 +30,7 @@
         </activity>
         <activity android:name=".CategoryPickedActivity" />
         <activity
-            android:name=".EditCategoryActivity"/>
+            android:name=".EditCategoryReviewActivity"/>
         <activity android:name=".EditReviewActivity" />
         <activity android:name=".SearchActivity">
             <intent-filter>

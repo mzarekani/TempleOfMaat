@@ -13,7 +13,7 @@ import java.util.List;
 public interface CategoryReviewDao {
 
     @Insert
-    void insert(CategoryReview categoryReview);
+    long insert(CategoryReview categoryReview);
 
     @Update
     void update(CategoryReview categoryReview);

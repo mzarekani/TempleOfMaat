@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".EditCategoryActivity"
+    tools:context=".EditCategoryReviewActivity"
     tools:showIn="@layout/activity_edit_category">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
@@ -29,19 +30,25 @@ import java.util.EnumSet;
 import java.util.List;
 
 import templeofmaat.judgment.data.AppDatabase;
+import templeofmaat.judgment.data.Book;
+import templeofmaat.judgment.data.BookDao;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 
-public class EditCategoryActivity extends AppCompatActivity {
+public class EditCategoryReviewActivity extends AppCompatActivity {
 
-    private static final String TAG = EditCategoryActivity.class.getName();
+    private static final String TAG = EditCategoryReviewActivity.class.getName();
 
     private CategoryReviewDao categoryReviewDao;
+    private BookDao bookDao;
     private TextView nameView;
+    private TextInputEditText commentView;
     private RatingBar ratingBar;
     private Spinner reviewTypeSpinner;
     private List<ReviewType> reviewTypes;
+    RadioGroup categoryReviewType;
     private CategoryReview categoryReview;
+    private Integer parentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +57,25 @@ public class EditCategoryActivity extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        nameView = findViewById(R.id._name);
+        nameView = findViewById(R.id.title);
         ratingBar = findViewById(R.id.rating_bar);
+        commentView = findViewById(R.id.comments);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        if (extras != null && extras.containsKey("CategoryReview")) {
-            categoryReview = (CategoryReview) extras.getSerializable("CategoryReview");
-            setTitle(categoryReview.getTitle());
+        if (extras != null) {
+            if (extras.containsKey("category_review")) {
+                categoryReview = (CategoryReview) extras.getSerializable("category_review");
+                setTitle(categoryReview.getTitle());
+            } else if (extras.containsKey("parent_id")){
+                parentId = extras.getInt("parent_id");
+            }
         } else {
             setTitle("New Entry");
         }
 
         categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
+        bookDao = AppDatabase.getAppDatabase(this).bookDao();
 
         setUpAdapter();
         setUpListeners();
@@ -109,6 +122,32 @@ public class EditCategoryActivity extends AppCompatActivity {
     public void setUpListeners() {
         onSave();
         onCancel();
+        categoryReviewType = findViewById(R.id.radio_group_category_review_type);
+        categoryReviewType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                RadioButton checkedRadioButton = radioGroup.findViewById(checkedId);
+                boolean checked = checkedRadioButton.isChecked();
+
+                switch(checkedId) {
+                    case R.id.radio_category:
+                        if (checked) {
+                            reviewTypeSpinner.setVisibility(View.INVISIBLE);
+                        }
+                        break;
+                    case R.id.radio_review:
+                        if (checked) {
+                            reviewTypeSpinner.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                    case R.id.radio_category_review:
+                        if (checked) {
+                            reviewTypeSpinner.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                }
+            }
+        });
     }
 
     public void onSave() {
@@ -117,37 +156,50 @@ public class EditCategoryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String title = nameView.getText().toString().trim();
                 if(!validateTitle(title)) {
-
-                }
-                Integer parentId = null;
-                if (categoryReview != null) {
-                    parentId = categoryReview.getId();
+                    return;
                 }
 
+                CategoryReview newCategoryReview;
+                ReviewType selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
                 RadioGroup categoryReviewType = findViewById(R.id.radio_group_category_review_type);
-                switch (categoryReviewType.getCheckedRadioButtonId()) {
-                    case R.id.radio_category:
-                        if (validateTitle(title)) {
-                            new AsyncTaskInsert(EditCategoryActivity.this).
-                                    execute(new CategoryReview(title, parentId, true, false, null));
-                            finish();
-                        }
-                        break;
-                    case R.id.radio_review:
-                        ReviewType selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
-                        if (selected == ReviewType.SELECT) {
-                            Toast.makeText(EditCategoryActivity.this,
-                                    "Must pick a type", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                        if (selected == ReviewType.Book) {
-                            new AsyncTaskInsert(EditCategoryActivity.this).
-                                    execute(new CategoryReview(title, parentId, false, true, selected.toString()));
-                            finish();
-                        }
-                        break;
-                    case R.id.radio_category_review:
-                        break;
+//                switch (categoryReviewType.getCheckedRadioButtonId()) {
+//                    case R.id.radio_category:
+//                        if (validateTitle(title)) {
+//                            new AsyncTaskInsert(EditCategoryReviewActivity.this).
+//                                    execute(new CategoryReview(title, parentId, true, false, null));
+//                        }
+//                        break;
+//                    case R.id.radio_review:
+//                        if (selected == ReviewType.SELECT) {
+//                            Toast.makeText(EditCategoryReviewActivity.this,
+//                                    "Must pick a type", Toast.LENGTH_LONG)
+//                                    .show();
+//                        } else if (selected == ReviewType.Book) {
+//                            new AsyncTaskInsert(EditCategoryReviewActivity.this).
+//                                    execute(new CategoryReview(title, parentId, false, true, selected.toString()), new Book());
+//                        }
+//                        break;
+//                    case R.id.radio_category_review:
+//                        new AsyncTaskInsert(EditCategoryReviewActivity.this).
+//                                execute(new CategoryReview(title, parentId, true, true, selected.toString()), new Book());
+//                        break;
+//                }
+
+                if (categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category) {
+                    new AsyncTaskInsert(EditCategoryReviewActivity.this).
+                            execute(new CategoryReview(title, parentId, true, false, null));
+                } else {
+                    boolean isCategoryReview = categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category_review;
+                    if (selected == ReviewType.SELECT) {
+                        Toast.makeText(EditCategoryReviewActivity.this,
+                                "Must pick a type", Toast.LENGTH_LONG)
+                                .show();
+                    } else if (selected == ReviewType.Book) {
+                        newCategoryReview = new CategoryReview(title, parentId, isCategoryReview, true, selected.toString());
+                        Book newBook = new Book(ratingBar.getRating(), commentView.getText().toString(), null);
+                        new AsyncTaskInsert(EditCategoryReviewActivity.this).
+                                execute(newCategoryReview, newBook);
+                    }
                 }
             }
         });
@@ -208,32 +260,42 @@ public class EditCategoryActivity extends AppCompatActivity {
         }
     }
 
-    private static class AsyncTaskInsert extends AsyncTask<CategoryReview, Void, Boolean> {
-        private WeakReference<EditCategoryActivity> editCategoryActivityWeakReference;
+    private static class AsyncTaskInsert extends AsyncTask<Object, Void, Boolean> {
+        private WeakReference<EditCategoryReviewActivity> editCategoryActivityWeakReference;
 
-        private AsyncTaskInsert(EditCategoryActivity editCategoryActivity) {
-            this.editCategoryActivityWeakReference = new WeakReference<>(editCategoryActivity);
+        private AsyncTaskInsert(EditCategoryReviewActivity editCategoryReviewActivity) {
+            this.editCategoryActivityWeakReference = new WeakReference<>(editCategoryReviewActivity);
         }
 
         @Override
-        protected Boolean doInBackground(CategoryReview... categoryReview) {
+        protected Boolean doInBackground(Object... objects) {
+            CategoryReview categoryReview = (CategoryReview) objects[0];
+            long id;
             try {
-                editCategoryActivityWeakReference.get().categoryReviewDao.insert(categoryReview[0]);
+                id = editCategoryActivityWeakReference.get().categoryReviewDao.insert(categoryReview);
             } catch (SQLiteException exception) {
                 Log.e(TAG, "Error Creating New Category", exception);
                 return false;
             }
 
-            Log.i(TAG, "Created new category: " + categoryReview[0].getTitle());
+            if (categoryReview.isReview()) {
+                if (categoryReview.getReviewType().equals(ReviewType.Book.toString())) {
+                    Book book = (Book) objects[1];
+                    book.setCategoryReviewId((int)id);
+                    editCategoryActivityWeakReference.get().bookDao.insert(book);
+                }
+            }
+
+            Log.i(TAG, "Created new category: " + categoryReview.getTitle());
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
-            if (!result) {
-                EditCategoryActivity editCategoryActivity = editCategoryActivityWeakReference.get();
-                if (editCategoryActivity != null) {
-                    editCategoryActivity.finish();
+            if (result) {
+                EditCategoryReviewActivity editCategoryReviewActivity = editCategoryActivityWeakReference.get();
+                if (editCategoryReviewActivity != null) {
+                    editCategoryReviewActivity.finish();
                 }
             }
         }

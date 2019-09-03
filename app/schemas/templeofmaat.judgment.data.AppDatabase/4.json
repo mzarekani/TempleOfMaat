@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "1533fbf391f8dc086744a84db5fc0877",
+    "identityHash": "9ece62a3caccf9675ce44db2dfe94f4c",
     "entities": [
       {
         "tableName": "category",
@@ -111,8 +111,8 @@
         ]
       },
       {
-        "tableName": "category_review",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER, `update_time` INTEGER, `title` TEXT NOT NULL, `title_reversed` TEXT NOT NULL, `subtitle` TEXT, `is_category` INTEGER NOT NULL, `is_review` INTEGER NOT NULL, `review_type` TEXT, `parent_id` INTEGER, FOREIGN KEY(`parent_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "tableName": "book",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER NOT NULL, `update_time` INTEGER NOT NULL, `category_review_id` INTEGER NOT NULL, `rating` REAL, `comment` TEXT, `author` TEXT, FOREIGN KEY(`category_review_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -124,13 +124,90 @@
             "fieldPath": "createTime",
             "columnName": "create_time",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "updateTime",
             "columnName": "update_time",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryReviewId",
+            "columnName": "category_review_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "rating",
+            "affinity": "REAL",
             "notNull": false
+          },
+          {
+            "fieldPath": "comment",
+            "columnName": "comment",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_book_category_review_id",
+            "unique": false,
+            "columnNames": [
+              "category_review_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_book_category_review_id` ON `${TABLE_NAME}` (`category_review_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "category_review",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "category_review_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "category_review",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER NOT NULL, `update_time` INTEGER NOT NULL, `title` TEXT NOT NULL, `title_reversed` TEXT NOT NULL, `subtitle` TEXT, `is_category` INTEGER NOT NULL, `is_review` INTEGER NOT NULL, `review_type` TEXT, `parent_id` INTEGER, FOREIGN KEY(`parent_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createTime",
+            "columnName": "create_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updateTime",
+            "columnName": "update_time",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "title",
@@ -225,7 +302,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1533fbf391f8dc086744a84db5fc0877')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ece62a3caccf9675ce44db2dfe94f4c')"
     ]
   }
 }

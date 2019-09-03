@@ -1,5 +1,6 @@
 package templeofmaat.judgment.data;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -28,22 +29,32 @@ public class Book {
     private int id;
 
     @ColumnInfo(name = Book.COLUMN_CREATE_TIME)
+    @NonNull
     private Instant createTime;
 
     @ColumnInfo(name = Book.COLUMN_UPDATE_TIME)
+    @NonNull
     private Instant updateTime;
 
     @ColumnInfo(name = Book.COLUMN_CATEGORY_REVIEW_ID)
     private int categoryReviewId;
 
     @ColumnInfo(name = Book.COLUMN_RATING)
-    private float rating;
+    private Float rating;
 
     @ColumnInfo(name = Book.COLUMN_COMMENT)
     private String comment;
 
     @ColumnInfo(name = Book.COLUMN_AUTHOR)
     private String author;
+
+    public Book(Float rating, String comment, String author) {
+        this.rating = rating;
+        this.comment = comment;
+        this.author = author;
+        createTime = Instant.now();
+        updateTime = Instant.now();
+    }
 
     public int getId() {
         return id;
@@ -77,7 +88,7 @@ public class Book {
         this.categoryReviewId = categoryReviewId;
     }
 
-    public float getRating() {
+    public Float getRating() {
         return rating;
     }
 

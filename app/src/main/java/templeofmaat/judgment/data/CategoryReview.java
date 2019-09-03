@@ -37,9 +37,11 @@ public class CategoryReview implements Serializable {
     private int id;
 
     @ColumnInfo(name = CategoryReview.COLUMN_CREATE_TIME)
+    @NonNull
     private Instant createTime;
 
     @ColumnInfo(name = CategoryReview.COLUMN_UPDATE_TIME)
+    @NonNull
     private Instant updateTime;
 
     @ColumnInfo(name = CategoryReview.COLUMN_TITLE)
@@ -139,7 +141,7 @@ public class CategoryReview implements Serializable {
         return review;
     }
 
-    public void setReview(boolean Review) {
+    public void setReview(boolean review) {
         this.review = review;
     }
 
