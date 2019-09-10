@@ -10,9 +10,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,11 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import templeofmaat.judgment.data.AppDatabase;
@@ -35,20 +29,16 @@ import templeofmaat.judgment.data.BookDao;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 
-public class EditCategoryReviewActivity extends AppCompatActivity {
+public class EditCategoryReviewActivity extends AppCompatActivity implements CategoryReviewFragment.OnFragmentInteractionListener {
 
     private static final String TAG = EditCategoryReviewActivity.class.getName();
 
     private CategoryReviewDao categoryReviewDao;
     private BookDao bookDao;
-    private TextView nameView;
-    private TextInputEditText commentView;
-    private RatingBar ratingBar;
-    private Spinner reviewTypeSpinner;
-    private List<ReviewType> reviewTypes;
-    RadioGroup categoryReviewType;
     private CategoryReview categoryReview;
     private Integer parentId;
+    CategoryReviewFragment categoryReviewFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +46,6 @@ public class EditCategoryReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_category);
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-
-        nameView = findViewById(R.id.title);
-        ratingBar = findViewById(R.id.rating_bar);
-        commentView = findViewById(R.id.comments);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -77,130 +63,28 @@ public class EditCategoryReviewActivity extends AppCompatActivity {
         categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
         bookDao = AppDatabase.getAppDatabase(this).bookDao();
 
-        setUpAdapter();
         setUpListeners();
-    }
 
-    private void setUpAdapter() {
-        reviewTypes = new ArrayList<>(EnumSet.allOf(ReviewType.class));
-        ArrayAdapter<ReviewType> adapter = new ArrayAdapter<ReviewType>(this,  R.layout.spinner_text_view, reviewTypes) {
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                convertView = super.getDropDownView(position, convertView, parent);
-                convertView.setVisibility(View.VISIBLE);
-                ViewGroup.LayoutParams p = convertView.getLayoutParams();
-                p.height = 100;
-                convertView.setLayoutParams(p);
+        if (categoryReview != null && categoryReview.isReview() && savedInstanceState == null) {
+            categoryReviewFragment = CategoryReviewFragment.newInstance(categoryReview, null, true);
+            getSupportFragmentManager().beginTransaction().add(R.id.category_review_fragment, categoryReviewFragment).commit();
+        } else if (parentId != null && savedInstanceState == null) {
+            categoryReviewFragment = CategoryReviewFragment.newInstance(null, parentId, true);
+            getSupportFragmentManager().beginTransaction().add(R.id.category_review_fragment, categoryReviewFragment).commit();
+        }
 
-                return convertView;
-            }
-        };
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        reviewTypeSpinner = findViewById(R.id.selectTypeSpinner);
-        reviewTypeSpinner.setAdapter(adapter);
-        reviewTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ReviewType selected =  (ReviewType) adapterView.getSelectedItem();
-                TextInputLayout textInputLayout = findViewById(R.id.text_input_layout_comments);
-                if (selected == ReviewType.Book) {
-                    ratingBar.setVisibility(View.VISIBLE);
-                    textInputLayout.setVisibility(View.VISIBLE);
-                } else {
-                    ratingBar.setVisibility(View.GONE);
-                    textInputLayout.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     public void setUpListeners() {
         onSave();
         onCancel();
-        categoryReviewType = findViewById(R.id.radio_group_category_review_type);
-        categoryReviewType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                RadioButton checkedRadioButton = radioGroup.findViewById(checkedId);
-                boolean checked = checkedRadioButton.isChecked();
-
-                switch(checkedId) {
-                    case R.id.radio_category:
-                        if (checked) {
-                            reviewTypeSpinner.setVisibility(View.INVISIBLE);
-                        }
-                        break;
-                    case R.id.radio_review:
-                        if (checked) {
-                            reviewTypeSpinner.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                    case R.id.radio_category_review:
-                        if (checked) {
-                            reviewTypeSpinner.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                }
-            }
-        });
     }
 
     public void onSave() {
         Button saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String title = nameView.getText().toString().trim();
-                if(!validateTitle(title)) {
-                    return;
-                }
-
-                CategoryReview newCategoryReview;
-                ReviewType selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
-                RadioGroup categoryReviewType = findViewById(R.id.radio_group_category_review_type);
-//                switch (categoryReviewType.getCheckedRadioButtonId()) {
-//                    case R.id.radio_category:
-//                        if (validateTitle(title)) {
-//                            new AsyncTaskInsert(EditCategoryReviewActivity.this).
-//                                    execute(new CategoryReview(title, parentId, true, false, null));
-//                        }
-//                        break;
-//                    case R.id.radio_review:
-//                        if (selected == ReviewType.SELECT) {
-//                            Toast.makeText(EditCategoryReviewActivity.this,
-//                                    "Must pick a type", Toast.LENGTH_LONG)
-//                                    .show();
-//                        } else if (selected == ReviewType.Book) {
-//                            new AsyncTaskInsert(EditCategoryReviewActivity.this).
-//                                    execute(new CategoryReview(title, parentId, false, true, selected.toString()), new Book());
-//                        }
-//                        break;
-//                    case R.id.radio_category_review:
-//                        new AsyncTaskInsert(EditCategoryReviewActivity.this).
-//                                execute(new CategoryReview(title, parentId, true, true, selected.toString()), new Book());
-//                        break;
-//                }
-
-                if (categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category) {
-                    new AsyncTaskInsert(EditCategoryReviewActivity.this).
-                            execute(new CategoryReview(title, parentId, true, false, null));
-                } else {
-                    boolean isCategoryReview = categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category_review;
-                    if (selected == ReviewType.SELECT) {
-                        Toast.makeText(EditCategoryReviewActivity.this,
-                                "Must pick a type", Toast.LENGTH_LONG)
-                                .show();
-                    } else if (selected == ReviewType.Book) {
-                        newCategoryReview = new CategoryReview(title, parentId, isCategoryReview, true, selected.toString());
-                        Book newBook = new Book(ratingBar.getRating(), commentView.getText().toString(), null);
-                        new AsyncTaskInsert(EditCategoryReviewActivity.this).
-                                execute(newCategoryReview, newBook);
-                    }
-                }
+                categoryReviewFragment.save();
             }
         });
     }
@@ -216,13 +100,13 @@ public class EditCategoryReviewActivity extends AppCompatActivity {
 
     private boolean validateNewReview() {
         boolean categoryValid = false;
-        if (reviewTypeSpinner.getSelectedItemId() == 0) {
-            Toast.makeText(this,
-                    "Must pick a type", Toast.LENGTH_LONG)
-                    .show();
-        } else {
-            categoryValid = true;
-        }
+//        if (reviewTypeSpinner.getSelectedItemId() == 0) {
+//            Toast.makeText(this,
+//                    "Must pick a type", Toast.LENGTH_LONG)
+//                    .show();
+//        } else {
+//            categoryValid = true;
+//        }
         return categoryValid;
     }
 
@@ -238,27 +122,11 @@ public class EditCategoryReviewActivity extends AppCompatActivity {
         return titleValid;
     }
 
-    public void onRadioButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch(view.getId()) {
-            case R.id.radio_category:
-                if (checked) {
-                    reviewTypeSpinner.setVisibility(View.INVISIBLE);
-                }
-                break;
-            case R.id.radio_review:
-                if (checked) {
-                    reviewTypeSpinner.setVisibility(View.VISIBLE);
-                }
-                break;
-            case R.id.radio_category_review:
-                if (checked) {
-                    reviewTypeSpinner.setVisibility(View.VISIBLE);
-                }
-                break;
-        }
+    @Override
+    public void finishActivity(){
+        finish();
     }
+
 
     private static class AsyncTaskInsert extends AsyncTask<Object, Void, Boolean> {
         private WeakReference<EditCategoryReviewActivity> editCategoryActivityWeakReference;

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,8 +39,9 @@ import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 
 public class CategoryActivity extends AppCompatActivity implements CategoryReviewFragment.OnFragmentInteractionListener {
-
     private static final String TAG = CategoryActivity.class.getName();
+
+    private static final String CATEGORY_REVIEW = "category_review";
 
     private ArrayAdapter categoryReviewAdapter;
     private ListView categoryReviewView;
@@ -64,21 +64,23 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if (extras != null && extras.containsKey("CategoryReview")) {
-            categoryReview = (CategoryReview) extras.getSerializable("CategoryReview");
+        if (extras != null && extras.containsKey(CATEGORY_REVIEW)) {
+            categoryReview = (CategoryReview) extras.getSerializable(CATEGORY_REVIEW);
             setTitle(categoryReview.getTitle());
         } else {
             setTitle("Categories");
         }
 
+        loadFragment();
 
-        // Revisit when allow for multiple accounts
+        // TODO Revisit when allow for multiple accounts
 //        SharedPreferences sharedPref = this.getSharedPreferences("user_info", MODE_PRIVATE);
 //        SharedPreferences.Editor editor = sharedPref.edit();
 //        editor.putString("user_account", accountName);
 //        editor.apply();
 //
 //        accountName = sharedPref.getString("user_account", "none");
+
         categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
         categoryReviewView = findViewById(R.id.categoryList);
         if (getDatabasePath(AppDatabase.DATABASE_NAME).exists()){
@@ -90,16 +92,14 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
 
         addListeners();
 
-        if (categoryReview != null && categoryReview.isReview() && savedInstanceState == null) {
-            categoryReviewFragment = CategoryReviewFragment.newInstance(categoryReview);
-            categoryReviewFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.article_fragment, categoryReviewFragment).commit();
-        }
-
-
     }
 
-
+    private void loadFragment() {
+        if (categoryReview != null && categoryReview.isReview()) {
+            categoryReviewFragment = CategoryReviewFragment.newInstance(categoryReview, null,false);
+            getSupportFragmentManager().beginTransaction().add(R.id.category_review_fragment, categoryReviewFragment).commit();
+        }
+    }
 
     public void populate(){
         LiveData<List<CategoryReview>> liveCategoryReviews;
@@ -139,7 +139,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
                 } else {
                     intent = new Intent(CategoryActivity.this, EditCategoryReviewActivity.class);
                 }
-                intent.putExtra("CategoryReview", categoryReview);
+                intent.putExtra(CATEGORY_REVIEW, categoryReview);
                 startActivity(intent);
             }
         });
@@ -161,7 +161,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         final Animation categoryReviewFragmentExit = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
         categoryReviewFragmentExit.setDuration(500);
 
-        frameLayout = findViewById(R.id.article_fragment);
+        frameLayout = findViewById(R.id.category_review_fragment);
         frameLayout.setOnTouchListener(new FrameLayout.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event){
@@ -195,10 +195,12 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
             }
             @Override
             public void onAnimationEnd(Animation animation) {
-                frameLayout.setVisibility(View.GONE);
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.hide(categoryReviewFragment);
-                fragmentTransaction.commit();
+                if (categoryReviewFragment != null) {
+                    frameLayout.setVisibility(View.GONE);
+                    fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.hide(categoryReviewFragment);
+                    fragmentTransaction.commit();
+                }
             }
         });
     }
@@ -230,7 +232,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_edit))) {
             Intent intent = new Intent(CategoryActivity.this, EditCategoryReviewActivity.class);
-            intent.putExtra("category_id", categoryReview);
+            intent.putExtra("category_review", categoryReview);
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_delete))) {
             confirmDeleteCategoryReview();
@@ -272,13 +274,14 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
     @Override
     public void onResume(){
         super.onResume();
+        loadFragment();
         populate();
     }
 
 
     @Override
-    public void onFragmentInteraction(Uri uri){
-        Toast.makeText(this, "w/e", Toast.LENGTH_LONG).show();
+    public void finishActivity(){
+        finish();
     }
 
     private static class AsyncTaskInsert extends AsyncTask<CategoryReview, Void, Boolean> {

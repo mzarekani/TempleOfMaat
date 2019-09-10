@@ -15,6 +15,8 @@
     <string name="review_name">Title</string>
     <string name="review_comments">Comments</string>
 
+    <string name="review_book_author">Author</string>
+
     <string name="category_and_review">Both</string>
 
     <string name="restaurant_name">Restaurant</string>

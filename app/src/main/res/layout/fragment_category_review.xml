@@ -7,12 +7,14 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical" >
+
     <com.google.android.material.textfield.TextInputLayout
         android:theme="@style/TextInputLayoutTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:layout_marginVertical="@dimen/activity_vertical_margin">
+        android:layout_marginVertical="@dimen/activity_vertical_margin" >
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
             style="@style/EditText"
@@ -21,7 +23,9 @@
             android:hint="@string/review_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
     <RadioGroup
         android:id="@+id/radio_group_category_review_type"
         android:layout_width="match_parent"
@@ -29,25 +33,30 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:orientation="horizontal" >
+
         <RadioButton android:id="@+id/radio_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/periwinkle"
             android:textColor="@color/periwinkle"
             android:text="@string/category" />
+
         <RadioButton android:id="@+id/radio_review"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/periwinkle"
             android:textColor="@color/periwinkle"
             android:text="@string/review" />
+
         <RadioButton android:id="@+id/radio_category_review"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/periwinkle"
             android:textColor="@color/periwinkle"
             android:text="@string/category_and_review" />
+
     </RadioGroup>
+
     <Spinner
         android:id="@+id/selectTypeSpinner"
         android:theme="@style/CategorySpinner"
@@ -56,38 +65,15 @@
         android:layout_gravity="start"
         android:background="@drawable/spinner_selector"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="100dp"
         android:visibility="invisible"/>
-    <RatingBar
-        android:id="@+id/rating_bar"
-        android:theme="@style/RatingBar"
-        android:numStars="5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:visibility="gone" />
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_comments"
-        style="@style/TextInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/review"
-            style="@style/EditText"
-            android:hint="@string/review_comments"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="textCapSentences|textMultiLine"
-            android:maxLength="2000"
-            android:gravity="top|start"
-            android:minLines="4"
-            android:maxLines="8" />
-    </com.google.android.material.textfield.TextInputLayout>
+
+    <include
+        android:id="@+id/review_book"
+        layout="@layout/review_book" />
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/periwinkle" />
+        android:layout_height="10dp"
+        android:background="@color/blue_grey_500" />
+
 </LinearLayout>

@@ -70,6 +70,13 @@ public class CategoryReview implements Serializable {
 
     public CategoryReview() {}
 
+    public CategoryReview(@NonNull String title) {
+        this.title = title;
+        titleReversed = reverseTitle(title);
+        createTime = Instant.now();
+        updateTime = Instant.now();
+    }
+
     public CategoryReview(@NonNull String title, @Nullable Integer parentId, boolean category, boolean review, String reviewType) {
         this.title = title;
         titleReversed = reverseTitle(title);
