@@ -6,13 +6,12 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -29,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -44,15 +44,18 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
     private static final String CATEGORY_REVIEW = "category_review";
 
     private ArrayAdapter categoryReviewAdapter;
-    private ListView categoryReviewView;
+    private ListView categoryReviewListView;
     ArrayList<CategoryReview> categoryReviews;
     private CategoryReviewDao categoryReviewDao;
     CategoryReview categoryReview;
     FrameLayout frameLayout;
-    float y;
+    float fragmentBottom;
     CategoryReviewFragment categoryReviewFragment;
     FragmentTransaction fragmentTransaction;
     private Toolbar toolbar;
+    int fragmentYDelta = 0;
+    Integer originalFragmentY;
+    View categoryReviewView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         setContentView(R.layout.activity_category);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        frameLayout = findViewById(R.id.category_review_fragment);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -82,7 +87,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
 //        accountName = sharedPref.getString("user_account", "none");
 
         categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
-        categoryReviewView = findViewById(R.id.categoryList);
+        categoryReviewListView = findViewById(R.id.categoryList);
         if (getDatabasePath(AppDatabase.DATABASE_NAME).exists()){
             populate();
         } else {
@@ -115,7 +120,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
                     categoryReviews = new ArrayList<>(loadedCategoryReviews);
                     categoryReviewAdapter = new ArrayAdapter<>(getApplicationContext(),
                             R.layout.mytextview, R.id.textview_1, categoryReviews);
-                    categoryReviewView.setAdapter(categoryReviewAdapter);
+                    categoryReviewListView.setAdapter(categoryReviewAdapter);
                 }
             }
         });
@@ -126,14 +131,25 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         populate();
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        View v = getCurrentFocus();
+
+        if (v instanceof FrameLayout) {
+            Toast.makeText(this, "shglshgsl", Toast.LENGTH_SHORT).show();
+
+        }
+
+        return super.dispatchTouchEvent(event);
+    }
     @SuppressLint("ClickableViewAccessibility")
     public void addListeners() {
-        categoryReviewView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        categoryReviewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
                 Intent intent;
-                CategoryReview categoryReview = (CategoryReview) categoryReviewView.getItemAtPosition(position);
+                CategoryReview categoryReview = (CategoryReview) categoryReviewListView.getItemAtPosition(position);
                 if (categoryReview.isCategory()) {
                     intent = new Intent(CategoryActivity.this, CategoryActivity.class);
                 } else {
@@ -150,56 +166,9 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
                 if (categoryReviewFragment != null) {
                     frameLayout.setVisibility(View.VISIBLE);
                     fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left,
-                            android.R.anim.fade_out);
                     fragmentTransaction.show(categoryReviewFragment);
                     fragmentTransaction.commit();
-                }
-            }
-        });
-
-        final Animation categoryReviewFragmentExit = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
-        categoryReviewFragmentExit.setDuration(500);
-
-        frameLayout = findViewById(R.id.category_review_fragment);
-        frameLayout.setOnTouchListener(new FrameLayout.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event){
-                int action = event.getActionMasked();
-                float distance = 75;
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        y = event.getY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        // Dragged Up
-                        if (distance < y - event.getY()) {
-                            frameLayout.startAnimation(categoryReviewFragmentExit);
-                            Toast.makeText(CategoryActivity.this, "up", Toast.LENGTH_SHORT).show();
-                        }
-                }
-                return true;
-            }
-        });
-
-        categoryReviewFragmentExit.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                if (categoryReviewFragment != null) {
-                    frameLayout.setVisibility(View.GONE);
-                    fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.hide(categoryReviewFragment);
-                    fragmentTransaction.commit();
+                    frameLayout.setY(fragmentBottom);
                 }
             }
         });
@@ -269,6 +238,56 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
             }
         });
         finish();
+    }
+
+    void moveReview(MotionEvent event) {
+        int action = event.getActionMasked();
+        final int Y = (int) event.getRawY();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                fragmentYDelta = (int)frameLayout.getY() - Y;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (Math.abs(Y - fragmentYDelta) > 10) {
+                    frameLayout.setY(Y + fragmentYDelta);
+                    categoryReviewListView.setY(frameLayout.getY() + frameLayout.getHeight());
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (getFragmentBottom() < originalFragmentY / 2) {
+                    if (categoryReviewFragment != null) {
+                        frameLayout.setVisibility(View.GONE);
+                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.hide(categoryReviewFragment);
+                        fragmentTransaction.commit();
+
+                        // Blame Android being retarded for this
+                        final Handler handler = new Handler();
+                        final Runnable runnable = new Runnable() {
+                            public void run() {
+                                categoryReviewListView.setY(toolbar.getY() + toolbar.getHeight());
+                            }
+                        };
+                        handler.postDelayed(runnable, 100);
+
+                    }
+                } else if (getFragmentBottom()  > originalFragmentY) {
+                    frameLayout.setY(fragmentBottom);
+                    categoryReviewListView.setY(frameLayout.getY() + frameLayout.getHeight());
+                } else {
+                    categoryReviewListView.setY(frameLayout.getY() + frameLayout.getHeight());
+                }
+        }
+    }
+
+    private int getFragmentBottom() {
+        return (int)frameLayout.getY() + frameLayout.getHeight();
+    }
+
+    void setFragmentBoundaries(int top) {
+        categoryReviewView = findViewById(R.id.category_review_fragment);
+        originalFragmentY = top + categoryReviewView.getHeight();
+        fragmentBottom = top;
     }
 
     @Override
