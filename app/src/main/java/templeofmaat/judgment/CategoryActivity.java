@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -131,17 +130,6 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         populate();
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        View v = getCurrentFocus();
-
-        if (v instanceof FrameLayout) {
-            Toast.makeText(this, "shglshgsl", Toast.LENGTH_SHORT).show();
-
-        }
-
-        return super.dispatchTouchEvent(event);
-    }
     @SuppressLint("ClickableViewAccessibility")
     public void addListeners() {
         categoryReviewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -254,7 +242,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (getFragmentBottom() < originalFragmentY / 2) {
+                if (getFragmentBottom() < originalFragmentY / ((float)5/2)) {
                     if (categoryReviewFragment != null) {
                         frameLayout.setVisibility(View.GONE);
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();

@@ -18,15 +18,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.Book;
@@ -41,6 +47,7 @@ public class CategoryReviewFragment extends Fragment {
     private static final String PARENT_ID = "parent_id";
     private static final String EDITABLE = "editable";
 
+    private View view;
     private TextInputEditText titleView;
     private TextInputLayout authorLayout;
     private TextInputEditText authorView;
@@ -49,21 +56,19 @@ public class CategoryReviewFragment extends Fragment {
     private RatingBar ratingBar;
     private TextInputLayout commentLayout;
     private TextInputEditText commentView;
+    private TextView dateView;
+
     private Book book;
-    private boolean editable;
-    private View view;
-
-
     private CategoryReview categoryReview;
     private Integer parentId;
+    private boolean editable;
+
     private List<ReviewType> reviewTypes;
 
     private CategoryReviewDao categoryReviewDao;
     private BookDao bookDao;
 
-
     private OnFragmentInteractionListener fragmentInteractionListener;
-
     private Context context;
 
     static CategoryReviewFragment newInstance(CategoryReview categoryReview, Integer parentId, Boolean editable) {
@@ -120,6 +125,7 @@ public class CategoryReviewFragment extends Fragment {
         }
 
         setTitleView();
+        setDateView();
         setAuthorView();
         setRatingBarView();
         setCommentView();
@@ -143,6 +149,21 @@ public class CategoryReviewFragment extends Fragment {
         if (categoryReview != null) {
             titleView.setText(categoryReview.getTitle());
         }
+    }
+
+    private void setDateView() {
+        dateView = view.findViewById(R.id.date);
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.US)
+                        .withZone(ZoneId.systemDefault());
+        String time;
+        if (book != null && book.getUpdateTime().isAfter(categoryReview.getUpdateTime())) {
+            time = formatter.format(book.getUpdateTime());
+        } else {
+            time = formatter.format(categoryReview.getUpdateTime());
+        }
+        dateView.setText(time);
     }
 
     private void setAuthorView() {
@@ -197,12 +218,8 @@ public class CategoryReviewFragment extends Fragment {
                 ReviewType selected =  (ReviewType) adapterView.getSelectedItem();
                 if (selected == ReviewType.Book) {
                     view.findViewById(R.id.review_book).setVisibility(View.VISIBLE);
-//                    ratingBar.setVisibility(View.VISIBLE);
-//                    commentLayout.setVisibility(View.VISIBLE);
                 } else {
                     view.findViewById(R.id.review_book).setVisibility(View.GONE);
-//                    ratingBar.setVisibility(View.GONE);
-//                    commentLayout.setVisibility(View.GONE);
                 }
             }
 
@@ -279,6 +296,7 @@ public class CategoryReviewFragment extends Fragment {
             categoryReview.setParentId(parentId);
         } else {
             categoryReview.setTitle(title);
+            categoryReview.setUpdateTime(Instant.now());
         }
 
         ReviewType selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
@@ -310,6 +328,7 @@ public class CategoryReviewFragment extends Fragment {
                 if (book == null) {
                     book = new Book(ratingBar.getRating(), commentView.getText().toString(), author);
                 } else {
+                    book.setUpdateTime(Instant.now());
                     book.setAuthor(author);
                     book.setRating(ratingBar.getRating());
                     book.setComment(commentView.getText().toString());
