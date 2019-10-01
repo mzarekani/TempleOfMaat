@@ -82,9 +82,15 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:visibility="invisible" />
 
-    <include
+    <ViewStub
         android:id="@+id/review_book"
-        layout="@layout/review_book" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ViewStub
+        android:id="@+id/review_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"

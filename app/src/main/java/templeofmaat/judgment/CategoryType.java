@@ -2,7 +2,7 @@ package templeofmaat.judgment;
 
 public enum CategoryType {
     SELECT("Select Category Type..."),
-    REVIEW("Review"),
+    REVIEW("ReviewService"),
     NOTE("Note");
 
     private String displayName;

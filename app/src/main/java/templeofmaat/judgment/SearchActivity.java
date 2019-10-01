@@ -15,7 +15,6 @@ import android.widget.ListView;
 import java.util.List;
 
 import templeofmaat.judgment.data.AppDatabase;
-import templeofmaat.judgment.data.ReviewEssentials;
 
 public class SearchActivity extends AppCompatActivity {
     private AppDatabase db;
@@ -27,50 +26,50 @@ public class SearchActivity extends AppCompatActivity {
 
         db = AppDatabase.getAppDatabase(this);
 
-        loadReviewEssentials(getIntent());
+      //  loadReviewEssentials(getIntent());
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        loadReviewEssentials(intent);
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//        loadReviewEssentials(intent);
+//    }
 
-    private void loadReviewEssentials(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            LiveData<List<ReviewEssentials>> reviewEssentials = db.reviewDao().getReviewEssentials(query);
-            reviewEssentials.observe(this, new Observer<List<ReviewEssentials>>() {
-                @Override
-                public void onChanged(List<ReviewEssentials> reviews) {
-                    if (reviews != null) {
-                        populate(reviews);
-                    }
-                }
-            });
-        }
-    }
-
-    private void populate(final List<ReviewEssentials> reviews) {
-        ListView searchResults = findViewById(R.id.searchResults);
-        ArrayAdapter searchResultsAdapter = new ArrayAdapter<>(this,
-                R.layout.mytextview, R.id.textview_1, reviews);
-        searchResults.setAdapter(searchResultsAdapter);
-
-        addOnItemClickListener(searchResults);
-    }
-
-    public void addOnItemClickListener(final ListView searchResults) {
-        searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1,
-                                    int position, long arg3) {
-                ReviewEssentials review = (ReviewEssentials) searchResults.getItemAtPosition(position);
-                    Intent intent = new Intent(SearchActivity.this, EditReviewActivity.class);
-                    intent.putExtra("review", review);
-                    startActivity(intent);
-            }
-        });
-    }
+//    private void loadReviewEssentials(Intent intent) {
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            LiveData<List<ReviewEssentials>> reviewEssentials = db.reviewDao().getReviewEssentials(query);
+//            reviewEssentials.observe(this, new Observer<List<ReviewEssentials>>() {
+//                @Override
+//                public void onChanged(List<ReviewEssentials> reviews) {
+//                    if (reviews != null) {
+//                        populate(reviews);
+//                    }
+//                }
+//            });
+//        }
+//    }
+//
+//    private void populate(final List<ReviewEssentials> reviews) {
+//        ListView searchResults = findViewById(R.id.searchResults);
+//        ArrayAdapter searchResultsAdapter = new ArrayAdapter<>(this,
+//                R.layout.mytextview, R.id.textview_1, reviews);
+//        searchResults.setAdapter(searchResultsAdapter);
+//
+//        addOnItemClickListener(searchResults);
+//    }
+//
+//    public void addOnItemClickListener(final ListView searchResults) {
+//        searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> arg0, View arg1,
+//                                    int position, long arg3) {
+//                ReviewEssentials review = (ReviewEssentials) searchResults.getItemAtPosition(position);
+//                    Intent intent = new Intent(SearchActivity.this, EditReviewActivity.class);
+//                    intent.putExtra("review", review);
+//                    startActivity(intent);
+//            }
+//        });
+//    }
 
 }

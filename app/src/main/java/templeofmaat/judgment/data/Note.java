@@ -1,5 +1,6 @@
 package templeofmaat.judgment.data;
 
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -11,50 +12,37 @@ import java.time.Instant;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(tableName = Book.TABLE_NAME,
-        indices = {@Index(Book.COLUMN_CATEGORY_REVIEW_ID)},
+@Entity(tableName = Note.TABLE_NAME,
+        indices = {@Index(Note.COLUMN_CATEGORY_REVIEW_ID)},
         foreignKeys = @ForeignKey(entity = CategoryReview.class, parentColumns = "id",
-                childColumns = Book.COLUMN_CATEGORY_REVIEW_ID, onDelete = CASCADE, onUpdate = CASCADE))
-public class Book {
+                childColumns = Note.COLUMN_CATEGORY_REVIEW_ID, onDelete = CASCADE, onUpdate = CASCADE))
+public class Note {
 
-    static final String TABLE_NAME = "book";
+    static final String TABLE_NAME = "note";
     static final String COLUMN_CREATE_TIME = "create_time";
     static final String COLUMN_UPDATE_TIME = "update_time";
     static final String COLUMN_CATEGORY_REVIEW_ID = "category_review_id";
-    static final String COLUMN_RATING = "rating";
     static final String COLUMN_COMMENT = "comment";
-    static final String COLUMN_AUTHOR = "author";
 
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name = Book.COLUMN_CREATE_TIME)
+    @ColumnInfo(name = Note.COLUMN_CREATE_TIME)
     @NonNull
     private Instant createTime;
 
-    @ColumnInfo(name = Book.COLUMN_UPDATE_TIME)
+    @ColumnInfo(name = Note.COLUMN_UPDATE_TIME)
     @NonNull
     private Instant updateTime;
 
-    @ColumnInfo(name = Book.COLUMN_CATEGORY_REVIEW_ID)
+    @ColumnInfo(name = Note.COLUMN_CATEGORY_REVIEW_ID)
     private int categoryReviewId;
 
-    @ColumnInfo(name = Book.COLUMN_RATING)
-    private Float rating;
-
-    @ColumnInfo(name = Book.COLUMN_COMMENT)
+    @ColumnInfo(name = Note.COLUMN_COMMENT)
     private String comment;
 
-    @ColumnInfo(name = Book.COLUMN_AUTHOR)
-    private String author;
-
-    public Book() {
-
-    }
-    public Book(Float rating, String comment, String author) {
-        this.rating = rating;
+    public Note(String comment) {
         this.comment = comment;
-        this.author = author;
         createTime = Instant.now();
         updateTime = Instant.now();
     }
@@ -91,31 +79,11 @@ public class Book {
         this.categoryReviewId = categoryReviewId;
     }
 
-    public Float getRating() {
-        return rating;
-    }
-
-    public void setRating(float rating) {
-        this.rating = rating;
-    }
-
     public String getComment() {
         return comment;
     }
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public void loadView() {
-
     }
 }

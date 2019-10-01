@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
@@ -31,14 +32,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.Book;
 import templeofmaat.judgment.data.BookDao;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
+import templeofmaat.judgment.ReviewService.ReviewService;
 
 
 public class CategoryReviewFragment extends Fragment {
@@ -49,16 +53,12 @@ public class CategoryReviewFragment extends Fragment {
 
     private View view;
     private TextInputEditText titleView;
-    private TextInputLayout authorLayout;
-    private TextInputEditText authorView;
     private RadioGroup categoryReviewType;
     private Spinner reviewTypeSpinner;
-    private RatingBar ratingBar;
-    private TextInputLayout commentLayout;
-    private TextInputEditText commentView;
     private TextView dateView;
+    private Map<String, View> reviewViews = new HashMap<>();
+    private ReviewType selected;
 
-    private Book book;
     private CategoryReview categoryReview;
     private Integer parentId;
     private boolean editable;
@@ -66,7 +66,7 @@ public class CategoryReviewFragment extends Fragment {
     private List<ReviewType> reviewTypes;
 
     private CategoryReviewDao categoryReviewDao;
-    private BookDao bookDao;
+    private ReviewService reviewService;
 
     private OnFragmentInteractionListener fragmentInteractionListener;
     private Context context;
@@ -103,9 +103,11 @@ public class CategoryReviewFragment extends Fragment {
             categoryReview = (CategoryReview) getArguments().getSerializable(CATEGORY_REVIEW);
             parentId = (Integer) getArguments().getSerializable("parent_id");
             categoryReviewDao = AppDatabase.getAppDatabase(context).categoryReviewDao();
-            bookDao = AppDatabase.getAppDatabase(context).bookDao();
-            if (categoryReview != null && categoryReview.isReview() && categoryReview.getReviewType().equals(ReviewType.Book.toString())) {
-                loadBook();
+            if (categoryReview != null && categoryReview.isReview()) {
+                ReviewType reviewType = ReviewType.valueOf(categoryReview.getReviewType());
+                reviewService = reviewType.getService();
+                reviewService.setUpService(CategoryReviewFragment.this);
+                reviewService.loadEntity(categoryReview.getId());
             }
         }
     }
@@ -120,15 +122,22 @@ public class CategoryReviewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         this.view = view;
 
+        if (reviewService != null) {
+            ReviewType reviewType = ReviewType.valueOf(categoryReview.getReviewType());
+            ViewStub stub = view.findViewById(reviewType.getViewId());
+            stub.setLayoutResource(reviewType.getLayoutId());
+            reviewViews.put(reviewType.toString(), stub.inflate());
+            reviewService.loadView(view);
+            reviewService.loadValues();
+        }
+
+
         if (!editable) {
             disableView(view);
         }
 
         setTitleView();
         setDateView();
-        setAuthorView();
-        setRatingBarView();
-        setCommentView();
         setReviewTypeView();
         setCategoryReviewTypeView();
     }
@@ -158,41 +167,14 @@ public class CategoryReviewFragment extends Fragment {
                         .withLocale(Locale.US)
                         .withZone(ZoneId.systemDefault());
         String time;
-        if (book != null && book.getUpdateTime().isAfter(categoryReview.getUpdateTime())) {
-            time = formatter.format(book.getUpdateTime());
-        } else {
+        if (reviewService != null && reviewService.getUpdateTime().isAfter((categoryReview.getUpdateTime()))) {
+            time = formatter.format(reviewService.getUpdateTime());
+        } else if (categoryReview != null){
             time = formatter.format(categoryReview.getUpdateTime());
+        } else {
+            time = formatter.format(Instant.now());
         }
         dateView.setText(time);
-    }
-
-    private void setAuthorView() {
-        authorLayout = view.findViewById(R.id.text_input_layout_author);
-        authorView = view.findViewById(R.id.author);
-        if (book != null && book.getAuthor() != null && !book.getAuthor().isEmpty()) {
-            authorView.setText(book.getAuthor());
-        } else if (!editable) {
-            authorLayout.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void setRatingBarView() {
-        ratingBar = view.findViewById(R.id.rating_bar);
-        if (book != null && book.getRating() != null) {
-            ratingBar.setRating(book.getRating());
-        } else if (!editable){
-            ratingBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void setCommentView() {
-        commentLayout = view.findViewById(R.id.text_input_layout_comments);
-        commentView = view.findViewById(R.id.review);
-        if (book != null && book.getComment() != null ) {
-            commentView.setText(book.getComment());
-        } else if (!editable){
-            commentLayout.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void setReviewTypeView() {
@@ -216,10 +198,25 @@ public class CategoryReviewFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View v, int i, long l) {
                 ReviewType selected =  (ReviewType) adapterView.getSelectedItem();
-                if (selected == ReviewType.Book) {
-                    view.findViewById(R.id.review_book).setVisibility(View.VISIBLE);
+                if (selected != ReviewType.SELECT) {
+                    if (reviewViews.containsKey(selected.toString())) {
+                        View reviewView = reviewViews.get(selected.toString());
+                        reviewView.setVisibility(View.VISIBLE);
+                    } else {
+                        ViewStub stub = view.findViewById(selected.getViewId());
+                        stub.setLayoutResource(selected.getLayoutId());
+                        reviewViews.put(selected.toString(), stub.inflate());
+                        reviewService = selected.getService();
+                        reviewService.setUpService(CategoryReviewFragment.this);
+                        reviewService.loadView(view);
+                    }
+                    reviewViews.entrySet().stream()
+                            .filter(reviewView -> !reviewView.getKey().equals(selected.toString()))
+                            .forEach(reviewView -> reviewView.getValue().setVisibility(View.GONE));
                 } else {
-                    view.findViewById(R.id.review_book).setVisibility(View.GONE);
+                    reviewViews.forEach((key, value) -> {
+                        value.setVisibility(View.GONE);
+                    });
                 }
             }
 
@@ -276,15 +273,6 @@ public class CategoryReviewFragment extends Fragment {
 
     }
 
-    private void loadBook() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                book = bookDao.getBook(categoryReview.getId());
-            }
-        });
-    }
-
     void save() {
         String title = titleView.getText().toString().trim();
         if(!validateTitle(title)) {
@@ -299,7 +287,7 @@ public class CategoryReviewFragment extends Fragment {
             categoryReview.setUpdateTime(Instant.now());
         }
 
-        ReviewType selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
+        selected = (ReviewType) reviewTypeSpinner.getSelectedItem();
         RadioGroup categoryReviewType = view.findViewById(R.id.radio_group_category_review_type);
         if (categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category) {
             categoryReview.setCategory(true);
@@ -308,33 +296,18 @@ public class CategoryReviewFragment extends Fragment {
             new CategoryReviewFragment.AsyncTaskInsert(CategoryReviewFragment.this).
                     execute(categoryReview);
         } else {
-            boolean isCategoryReview = categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category_review;
             if (selected == ReviewType.SELECT) {
                 Toast.makeText(context,
                         "Must pick a type", Toast.LENGTH_LONG)
                         .show();
-            } else if (selected == ReviewType.Book) {
+            } else {
+                boolean isCategoryReview = categoryReviewType.getCheckedRadioButtonId() == R.id.radio_category_review;
                 categoryReview.setCategory(isCategoryReview);
                 categoryReview.setReview(true);
-                categoryReview.setReviewType(selected.toString());
+                categoryReview.setReviewType(ReviewType.valueOf(selected.name()).name());
 
-                String author;
-                if (authorView.getText().toString().trim().isEmpty()) {
-                    author = null;
-                } else {
-                    author = authorView.getText().toString().trim();
-                }
-
-                if (book == null) {
-                    book = new Book(ratingBar.getRating(), commentView.getText().toString(), author);
-                } else {
-                    book.setUpdateTime(Instant.now());
-                    book.setAuthor(author);
-                    book.setRating(ratingBar.getRating());
-                    book.setComment(commentView.getText().toString());
-                }
-                new CategoryReviewFragment.AsyncTaskInsert(CategoryReviewFragment.this).
-                        execute(categoryReview, book);
+                new AsyncTaskInsert(CategoryReviewFragment.this).
+                        execute(categoryReview);
             }
         }
     }
@@ -361,7 +334,7 @@ public class CategoryReviewFragment extends Fragment {
         void finishActivity();
     }
 
-    private static class AsyncTaskInsert extends AsyncTask<Object, Void, Boolean> {
+    private static class AsyncTaskInsert extends AsyncTask<Object, Void, Long> {
         private WeakReference<CategoryReviewFragment> categoryReviewFragmentWeakReference;
 
         private AsyncTaskInsert(CategoryReviewFragment categoryReviewFragment) {
@@ -369,33 +342,30 @@ public class CategoryReviewFragment extends Fragment {
         }
 
         @Override
-        protected Boolean doInBackground(Object... objects) {
+        protected Long doInBackground(Object... objects) {
             CategoryReview categoryReview = (CategoryReview) objects[0];
             long id;
             try {
                 id = categoryReviewFragmentWeakReference.get().categoryReviewDao.insert(categoryReview);
             } catch (SQLiteException exception) {
                 Log.e(TAG, "Error Creating/Updating Category", exception);
-                return false;
-            }
-
-            if (categoryReview.isReview()) {
-                if (categoryReview.getReviewType().equals(ReviewType.Book.toString())) {
-                    Book book = (Book) objects[1];
-                    book.setCategoryReviewId((int)id);
-                    categoryReviewFragmentWeakReference.get().bookDao.insert(book);
-                }
+                return null;
             }
 
             Log.i(TAG, "Created/Updated category: " + categoryReview.getTitle());
-            return true;
+            if (categoryReview.isReview()) {
+                return id;
+            } else {
+                return null;
+            }
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
+        protected void onPostExecute(Long id) {
+            if (id != null) {
                 CategoryReviewFragment categoryReviewFragment = categoryReviewFragmentWeakReference.get();
                 if (categoryReviewFragment != null) {
+                    categoryReviewFragment.reviewService.createReview(id.intValue());
                     categoryReviewFragment.fragmentInteractionListener.finishActivity();
                 }
             }

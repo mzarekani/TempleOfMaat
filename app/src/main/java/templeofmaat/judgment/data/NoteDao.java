@@ -7,14 +7,14 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 @Dao
-public interface BookDao {
+public interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Book book);
+    void insert(Note note);
 
     @Update
-    void update(Book book);
+    void update(Note note);
 
-    @Query("SELECT * FROM book WHERE category_review_id = :categoryReviewId")
-    Book get(int categoryReviewId);
+    @Query("SELECT * FROM note WHERE category_review_id = :categoryReviewId")
+    Note get(int categoryReviewId);
 }

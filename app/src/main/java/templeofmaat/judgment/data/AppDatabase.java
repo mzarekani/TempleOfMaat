@@ -9,7 +9,7 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Category.class, Review.class, Book.class, CategoryReview.class}, version = AppDatabase.VERSION_NUMBER)
+@Database(entities = {Category.class, CategoryReview.class, Book.class, Note.class}, version = AppDatabase.VERSION_NUMBER)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     static final int VERSION_NUMBER = 4;
@@ -18,8 +18,8 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase INSTANCE;
 
     public abstract CategoryDao categoryDao();
-    public abstract ReviewDao reviewDao();
     public abstract BookDao bookDao();
+    public abstract NoteDao noteDao();
     public abstract CategoryReviewDao categoryReviewDao();
 
     public static AppDatabase getAppDatabase(Context context) {
