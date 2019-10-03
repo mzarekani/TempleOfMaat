@@ -17,13 +17,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
 import java.time.Instant;
@@ -37,9 +35,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import templeofmaat.judgment.ReviewService.ReviewServiceFactory;
 import templeofmaat.judgment.data.AppDatabase;
-import templeofmaat.judgment.data.Book;
-import templeofmaat.judgment.data.BookDao;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 import templeofmaat.judgment.ReviewService.ReviewService;
@@ -105,7 +102,7 @@ public class CategoryReviewFragment extends Fragment {
             categoryReviewDao = AppDatabase.getAppDatabase(context).categoryReviewDao();
             if (categoryReview != null && categoryReview.isReview()) {
                 ReviewType reviewType = ReviewType.valueOf(categoryReview.getReviewType());
-                reviewService = reviewType.getService();
+                reviewService = ReviewServiceFactory.getReviewService(reviewType);
                 reviewService.setUpService(CategoryReviewFragment.this);
                 reviewService.loadEntity(categoryReview.getId());
             }
@@ -206,7 +203,7 @@ public class CategoryReviewFragment extends Fragment {
                         ViewStub stub = view.findViewById(selected.getViewId());
                         stub.setLayoutResource(selected.getLayoutId());
                         reviewViews.put(selected.toString(), stub.inflate());
-                        reviewService = selected.getService();
+                        reviewService = ReviewServiceFactory.getReviewService(selected);
                         reviewService.setUpService(CategoryReviewFragment.this);
                         reviewService.loadView(view);
                     }
@@ -248,10 +245,6 @@ public class CategoryReviewFragment extends Fragment {
                         }
                         break;
                     case R.id.radio_review:
-                        if (checked) {
-                            reviewTypeSpinner.setVisibility(View.VISIBLE);
-                        }
-                        break;
                     case R.id.radio_category_review:
                         if (checked) {
                             reviewTypeSpinner.setVisibility(View.VISIBLE);

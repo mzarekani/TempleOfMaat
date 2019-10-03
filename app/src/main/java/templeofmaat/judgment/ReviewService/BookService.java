@@ -58,10 +58,10 @@ public class BookService implements ReviewService {
         return book.getUpdateTime();
     }
 
-    public void createReview(int categoryId) {
+    public void createReview(int categoryReviewId) {
         if (book == null) {
             book = new Book(ratingBar.getRating(), commentView.getText().toString().trim(), authorView.getText().toString().trim());
-            book.setCategoryReviewId(categoryId);
+            book.setCategoryReviewId(categoryReviewId);
         } else {
             book.setRating(ratingBar.getRating());
             book.setComment(commentView.getText().toString().trim());
@@ -74,11 +74,9 @@ public class BookService implements ReviewService {
 
     private static class AsyncTaskInsert extends AsyncTask<Object, Void, Boolean> {
         private WeakReference<BookService> bookServiceWeakReference;
-        BookService bookService;
 
         private AsyncTaskInsert(BookService bookService) {
             this.bookServiceWeakReference = new WeakReference<>(bookService);
-            this.bookService = bookService;
         }
 
         @Override
@@ -86,7 +84,6 @@ public class BookService implements ReviewService {
             Book book = (Book) objects[0];
             try {
                 bookServiceWeakReference.get().bookDao.insert(book);
-               // bookService.bookDao.insert(book);
             } catch (SQLiteException exception) {
                 Log.e(TAG, "Error Creating/Updating Category", exception);
                 return false;

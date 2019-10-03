@@ -3,7 +3,6 @@ package templeofmaat.judgment;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -40,12 +39,12 @@ public class ReviewLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         Toast.makeText(activity, "hiiiii889", Toast.LENGTH_SHORT).show();
-        activity.moveReview(event);
+        activity.adjustCategoryReviewFragmentView(event);
         return true;
     }
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        activity.moveReview(event);
+        activity.adjustCategoryReviewFragmentView(event);
         return true;
     }
 }

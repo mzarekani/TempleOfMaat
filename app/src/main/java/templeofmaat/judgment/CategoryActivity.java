@@ -227,7 +227,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         finish();
     }
 
-    void moveReview(MotionEvent event) {
+    void adjustCategoryReviewFragmentView(MotionEvent event) {
         int action = event.getActionMasked();
         final int Y = (int) event.getRawY();
         switch (action) {
