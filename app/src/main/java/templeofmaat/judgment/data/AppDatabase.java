@@ -9,7 +9,7 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Category.class, CategoryReview.class, Book.class, Note.class}, version = AppDatabase.VERSION_NUMBER)
+@Database(entities = {CategoryReview.class, Book.class, Note.class}, version = AppDatabase.VERSION_NUMBER)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     static final int VERSION_NUMBER = 4;
@@ -17,7 +17,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
 
-    public abstract CategoryDao categoryDao();
     public abstract BookDao bookDao();
     public abstract NoteDao noteDao();
     public abstract CategoryReviewDao categoryReviewDao();
@@ -26,7 +25,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             INSTANCE =
                     Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                            .addMigrations(MIGRATION_1_2)
                             .build();
         }
         return INSTANCE;
@@ -40,13 +39,6 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase db) {
             db.execSQL("CREATE INDEX IF NOT EXISTS index_review_name ON review (name) ");
-        }
-    };
-
-    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
-        @Override
-        public void migrate(SupportSQLiteDatabase db) {
-            db.execSQL("ALTER TABLE " + Category.TABLE_NAME + " ADD type TEXT ");
         }
     };
 }

@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void gotoCategoriesActivity(View view) {
-        Intent intent = new Intent(this, CategoryActivity.class);
+        Intent intent = new Intent(this, CategoryReviewActivity.class);
         startActivity(intent);
     }
 

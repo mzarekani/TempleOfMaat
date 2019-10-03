@@ -2,49 +2,8 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "81e0783e4d297262296e92d5a44eaab1",
+    "identityHash": "fbe8879ec5d58333d4673ab3abe8177b",
     "entities": [
-      {
-        "tableName": "category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `type` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": false
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [
-          {
-            "name": "index_category_name",
-            "unique": true,
-            "columnNames": [
-              "name"
-            ],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_category_name` ON `${TABLE_NAME}` (`name`)"
-          }
-        ],
-        "foreignKeys": []
-      },
       {
         "tableName": "category_review",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER NOT NULL, `update_time` INTEGER NOT NULL, `title` TEXT NOT NULL, `title_reversed` TEXT NOT NULL, `subtitle` TEXT, `is_category` INTEGER NOT NULL, `is_review` INTEGER NOT NULL, `review_type` TEXT, `parent_id` INTEGER, FOREIGN KEY(`parent_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
@@ -302,7 +261,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '81e0783e4d297262296e92d5a44eaab1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fbe8879ec5d58333d4673ab3abe8177b')"
     ]
   }
 }

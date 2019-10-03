@@ -9,22 +9,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 public class ReviewLayout extends FrameLayout {
-    CategoryActivity activity;
+    CategoryReviewActivity activity;
     Integer top = 0;
     public ReviewLayout(@NonNull Context context) {
         super(context);
-        if(context instanceof CategoryActivity)
+        if(context instanceof CategoryReviewActivity)
         {
-             activity = (CategoryActivity)context;
+             activity = (CategoryReviewActivity)context;
             // Then call the method in the activity.
         }
     }
 
     public ReviewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if(context instanceof CategoryActivity)
+        if(context instanceof CategoryReviewActivity)
         {
-            activity = (CategoryActivity)context;
+            activity = (CategoryReviewActivity)context;
             // Then call the method in the activity.
         }
     }

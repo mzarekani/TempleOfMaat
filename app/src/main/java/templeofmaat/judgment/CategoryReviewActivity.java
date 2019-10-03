@@ -36,8 +36,8 @@ import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 
-public class CategoryActivity extends AppCompatActivity implements CategoryReviewFragment.OnFragmentInteractionListener {
-    private static final String TAG = CategoryActivity.class.getName();
+public class CategoryReviewActivity extends AppCompatActivity implements CategoryReviewFragment.OnFragmentInteractionListener {
+    private static final String TAG = CategoryReviewActivity.class.getName();
 
     private static final String CATEGORY_REVIEW = "category_review";
 
@@ -58,7 +58,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
+        setContentView(R.layout.activity_category_review);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -125,7 +125,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
     }
 
     public void initialize(){
-        new AsyncTaskInsert(CategoryActivity.this).execute(new CategoryReview("Books", null, true, false, null));
+        new AsyncTaskInsert(CategoryReviewActivity.this).execute(new CategoryReview("Books", null, true, false, null));
         populate();
     }
 
@@ -138,9 +138,9 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
                 Intent intent;
                 CategoryReview categoryReview = (CategoryReview) categoryReviewListView.getItemAtPosition(position);
                 if (categoryReview.isCategory()) {
-                    intent = new Intent(CategoryActivity.this, CategoryActivity.class);
+                    intent = new Intent(CategoryReviewActivity.this, CategoryReviewActivity.class);
                 } else {
-                    intent = new Intent(CategoryActivity.this, EditCategoryReviewActivity.class);
+                    intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
                 }
                 intent.putExtra(CATEGORY_REVIEW, categoryReview);
                 startActivity(intent);
@@ -181,13 +181,13 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
 
         CharSequence selected = item.getTitle();
         if (selected.equals(getString(R.string.category_new))) {
-            Intent intent = new Intent(CategoryActivity.this, EditCategoryReviewActivity.class);
+            Intent intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
             if (categoryReview != null) {
                 intent.putExtra("parent_id", categoryReview.getId());
             }
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_edit))) {
-            Intent intent = new Intent(CategoryActivity.this, EditCategoryReviewActivity.class);
+            Intent intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
             intent.putExtra("category_review", categoryReview);
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_delete))) {
@@ -291,10 +291,10 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
     }
 
     private static class AsyncTaskInsert extends AsyncTask<CategoryReview, Void, Boolean> {
-        private WeakReference<CategoryActivity> categoryActivityWeakReference;
+        private WeakReference<CategoryReviewActivity> categoryActivityWeakReference;
 
-        private AsyncTaskInsert(CategoryActivity categoryActivity) {
-            this.categoryActivityWeakReference = new WeakReference<>(categoryActivity);
+        private AsyncTaskInsert(CategoryReviewActivity categoryReviewActivity) {
+            this.categoryActivityWeakReference = new WeakReference<>(categoryReviewActivity);
         }
 
         @Override
@@ -313,9 +313,9 @@ public class CategoryActivity extends AppCompatActivity implements CategoryRevie
         @Override
         protected void onPostExecute(Boolean result) {
             if (!result) {
-                CategoryActivity categoryActivity = categoryActivityWeakReference.get();
-                if (categoryActivity != null) {
-                    categoryActivity.populate();
+                CategoryReviewActivity categoryReviewActivity = categoryActivityWeakReference.get();
+                if (categoryReviewActivity != null) {
+                    categoryReviewActivity.populate();
                 }
             }
         }

@@ -23,7 +23,7 @@ public class EditCategoryReviewActivity extends AppCompatActivity implements Cat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_category);
+        setContentView(R.layout.activity_edit_category_review);
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
