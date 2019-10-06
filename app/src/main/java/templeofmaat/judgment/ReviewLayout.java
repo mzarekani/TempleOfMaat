@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -13,19 +12,15 @@ public class ReviewLayout extends FrameLayout {
     Integer top = 0;
     public ReviewLayout(@NonNull Context context) {
         super(context);
-        if(context instanceof CategoryReviewActivity)
-        {
+        if(context instanceof CategoryReviewActivity) {
              activity = (CategoryReviewActivity)context;
-            // Then call the method in the activity.
         }
     }
 
     public ReviewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if(context instanceof CategoryReviewActivity)
-        {
+        if(context instanceof CategoryReviewActivity) {
             activity = (CategoryReviewActivity)context;
-            // Then call the method in the activity.
         }
     }
 
@@ -38,7 +33,6 @@ public class ReviewLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        Toast.makeText(activity, "hiiiii889", Toast.LENGTH_SHORT).show();
         activity.adjustCategoryReviewFragmentView(event);
         return true;
     }

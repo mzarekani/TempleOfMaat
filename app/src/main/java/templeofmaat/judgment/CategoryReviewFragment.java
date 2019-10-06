@@ -317,6 +317,16 @@ public class CategoryReviewFragment extends Fragment {
         return titleValid;
     }
 
+    void deleteCategoryReview() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                categoryReviewDao.delete(categoryReview);
+            }
+        });
+        fragmentInteractionListener.finishActivity();
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
