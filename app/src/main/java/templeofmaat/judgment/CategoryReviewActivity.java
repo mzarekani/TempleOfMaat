@@ -36,10 +36,9 @@ import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.CategoryReview;
 import templeofmaat.judgment.data.CategoryReviewDao;
 
+
 public class CategoryReviewActivity extends AppCompatActivity implements CategoryReviewFragment.OnFragmentInteractionListener {
     private static final String TAG = CategoryReviewActivity.class.getName();
-
-    private static final String CATEGORY_REVIEW = "category_review";
 
     private ArrayAdapter categoryReviewAdapter;
     private ListView categoryReviewListView;
@@ -67,8 +66,8 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if (extras != null && extras.containsKey(CATEGORY_REVIEW)) {
-            categoryReview = (CategoryReview) extras.getSerializable(CATEGORY_REVIEW);
+        if (extras != null && extras.containsKey(Constants.CATEGORY_REVIEW)) {
+            categoryReview = (CategoryReview) extras.getSerializable(Constants.CATEGORY_REVIEW);
             setTitle(categoryReview.getTitle());
         } else {
             setTitle("Categories");
@@ -107,9 +106,9 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
     public void populate(){
         LiveData<List<CategoryReview>> liveCategoryReviews;
         if (categoryReview != null) {
-            liveCategoryReviews = categoryReviewDao.getReviewCategoriesForParent(categoryReview.getId());
+            liveCategoryReviews = categoryReviewDao.getCategoryReviewsForParent(categoryReview.getId());
         } else {
-            liveCategoryReviews = categoryReviewDao.getRootReviewCategories();
+            liveCategoryReviews = categoryReviewDao.getRootCategoryReviews();
         }
         liveCategoryReviews.observe(this, new Observer<List<CategoryReview>>() {
             @Override
@@ -142,7 +141,7 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
                 } else {
                     intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
                 }
-                intent.putExtra(CATEGORY_REVIEW, categoryReview);
+                intent.putExtra(Constants.CATEGORY_REVIEW, categoryReview);
                 startActivity(intent);
             }
         });
@@ -183,12 +182,12 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
         if (selected.equals(getString(R.string.category_new))) {
             Intent intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
             if (categoryReview != null) {
-                intent.putExtra("parent_id", categoryReview.getId());
+                intent.putExtra(Constants.PARENT_ID, categoryReview.getId());
             }
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_edit))) {
             Intent intent = new Intent(CategoryReviewActivity.this, EditCategoryReviewActivity.class);
-            intent.putExtra("category_review", categoryReview);
+            intent.putExtra(Constants.CATEGORY_REVIEW, categoryReview);
             startActivity(intent);
         } else if (selected.equals(getString(R.string.category_delete))) {
             confirmDeleteCategoryReview();

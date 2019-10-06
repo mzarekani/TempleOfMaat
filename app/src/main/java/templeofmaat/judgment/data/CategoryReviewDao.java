@@ -23,8 +23,11 @@ public interface CategoryReviewDao {
     void delete(CategoryReview categoryReview);
 
     @Query("SELECT * FROM category_review where parent_id is null")
-    LiveData<List<CategoryReview>> getRootReviewCategories();
+    LiveData<List<CategoryReview>> getRootCategoryReviews();
 
     @Query("SELECT * FROM category_review where parent_id = :parentId")
-    LiveData<List<CategoryReview>> getReviewCategoriesForParent(int parentId);
+    LiveData<List<CategoryReview>> getCategoryReviewsForParent(int parentId);
+
+    @Query("SELECT * FROM category_review where title like :title")
+    LiveData<List<CategoryReview>> getCategoryReviewsForName(String title);
 }

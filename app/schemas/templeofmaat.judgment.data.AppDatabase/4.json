@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "fbe8879ec5d58333d4673ab3abe8177b",
+    "identityHash": "c9aa48c87e1c6e47d028451a489e5b13",
     "entities": [
       {
         "tableName": "category_review",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER NOT NULL, `update_time` INTEGER NOT NULL, `title` TEXT NOT NULL, `title_reversed` TEXT NOT NULL, `subtitle` TEXT, `is_category` INTEGER NOT NULL, `is_review` INTEGER NOT NULL, `review_type` TEXT, `parent_id` INTEGER, FOREIGN KEY(`parent_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `create_time` INTEGER NOT NULL, `update_time` INTEGER NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT, `is_category` INTEGER NOT NULL, `is_review` INTEGER NOT NULL, `review_type` TEXT, `parent_id` INTEGER, FOREIGN KEY(`parent_id`) REFERENCES `category_review`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -29,12 +29,6 @@
           {
             "fieldPath": "title",
             "columnName": "title",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "titleReversed",
-            "columnName": "title_reversed",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -83,14 +77,6 @@
               "title"
             ],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_category_review_title` ON `${TABLE_NAME}` (`title`)"
-          },
-          {
-            "name": "index_category_review_title_reversed",
-            "unique": false,
-            "columnNames": [
-              "title_reversed"
-            ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_category_review_title_reversed` ON `${TABLE_NAME}` (`title_reversed`)"
           },
           {
             "name": "index_category_review_parent_id",
@@ -261,7 +247,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fbe8879ec5d58333d4673ab3abe8177b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c9aa48c87e1c6e47d028451a489e5b13')"
     ]
   }
 }

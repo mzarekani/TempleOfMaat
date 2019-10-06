@@ -34,11 +34,11 @@ public class EditCategoryReviewActivity extends AppCompatActivity implements Cat
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            if (extras.containsKey("category_review")) {
-                categoryReview = (CategoryReview) extras.getSerializable("category_review");
+            if (extras.containsKey(Constants.CATEGORY_REVIEW)) {
+                categoryReview = (CategoryReview) extras.getSerializable(Constants.CATEGORY_REVIEW);
                 setTitle(categoryReview.getTitle());
-            } else if (extras.containsKey("parent_id")) {
-                parentId = extras.getInt("parent_id");
+            } else if (extras.containsKey(Constants.PARENT_ID)) {
+                parentId = extras.getInt(Constants.PARENT_ID);
             }
         } else {
             setTitle("New Entry");

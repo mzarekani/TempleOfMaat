@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -16,7 +15,7 @@ import java.time.Instant;
 import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = CategoryReview.TABLE_NAME,
-        indices = {@Index(CategoryReview.COLUMN_TITLE), @Index(CategoryReview.COLUMN_TITLE_REVERSED),
+        indices = {@Index(CategoryReview.COLUMN_TITLE),
                 @Index(CategoryReview.COLUMN_PARENT_ID)},
         foreignKeys = @ForeignKey(entity = CategoryReview.class, parentColumns = "id",
                 childColumns = CategoryReview.COLUMN_PARENT_ID, onDelete = CASCADE, onUpdate = CASCADE))
@@ -26,7 +25,6 @@ public class CategoryReview implements Serializable {
     static final String COLUMN_CREATE_TIME = "create_time";
     static final String COLUMN_UPDATE_TIME = "update_time";
     static final String COLUMN_TITLE = "title";
-    static final String COLUMN_TITLE_REVERSED = "title_reversed";
     static final String COLUMN_SUBTITLE = "subtitle";
     static final String COLUMN_IS_CATEGORY = "is_category";
     static final String COLUMN_IS_REVIEW = "is_review";
@@ -48,10 +46,6 @@ public class CategoryReview implements Serializable {
     @NonNull
     private String title;
 
-    @ColumnInfo(name = CategoryReview.COLUMN_TITLE_REVERSED)
-    @NonNull
-    private String titleReversed;
-
     @ColumnInfo(name = CategoryReview.COLUMN_SUBTITLE)
     private String subtitle;
 
@@ -72,14 +66,12 @@ public class CategoryReview implements Serializable {
 
     public CategoryReview(@NonNull String title) {
         this.title = title;
-        titleReversed = reverseTitle(title);
         createTime = Instant.now();
         updateTime = Instant.now();
     }
 
     public CategoryReview(@NonNull String title, @Nullable Integer parentId, boolean category, boolean review, String reviewType) {
         this.title = title;
-        titleReversed = reverseTitle(title);
         this.parentId = parentId;
         this.category = category;
         this.review = review;
@@ -120,14 +112,6 @@ public class CategoryReview implements Serializable {
         this.title = title;
     }
 
-    public String getTitleReversed() {
-        return titleReversed;
-    }
-
-    public void setTitleReversed(String titleReversed) {
-        this.titleReversed = titleReversed;
-    }
-
     public String getSubtitle() {
         return subtitle;
     }
@@ -166,11 +150,6 @@ public class CategoryReview implements Serializable {
 
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
-    }
-
-    @Ignore
-    private String reverseTitle(String title) {
-        return new StringBuilder(title).reverse().toString();
     }
 
     @Override

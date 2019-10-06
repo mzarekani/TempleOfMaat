@@ -24,7 +24,7 @@
     <string name="save">Save</string>
 
     <string name="search_title">Search</string>
-    <string name="search_hint">Search Reviews</string>
+    <string name="search_hint">Search</string>
     <string name="title_activity_edit_category">EditCategoryActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
