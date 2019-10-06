@@ -3,11 +3,9 @@ package templeofmaat.judgment;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -18,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,17 +39,16 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
 
     private ArrayAdapter categoryReviewAdapter;
     private ListView categoryReviewListView;
-    ArrayList<CategoryReview> categoryReviews;
+    private ArrayList<CategoryReview> categoryReviews;
     private CategoryReviewDao categoryReviewDao;
-    CategoryReview categoryReview;
-    FrameLayout frameLayout;
-    float fragmentBottom;
-    CategoryReviewFragment categoryReviewFragment;
-    FragmentTransaction fragmentTransaction;
+    private CategoryReview categoryReview;
+    private FrameLayout frameLayout;
+    private float fragmentBottom;
+    private CategoryReviewFragment categoryReviewFragment;
+    private FragmentTransaction fragmentTransaction;
     private Toolbar toolbar;
-    int fragmentYDelta = 0;
-    Integer originalFragmentY;
-    View categoryReviewView;
+    private int fragmentYDelta;
+    private Integer originalFragmentY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +62,8 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if (extras != null && extras.containsKey(Constants.CATEGORY_REVIEW)) {
-            categoryReview = (CategoryReview) extras.getSerializable(Constants.CATEGORY_REVIEW);
-            setTitle(categoryReview.getTitle());
-        } else {
-            setTitle("Categories");
-        }
+        categoryReview = (CategoryReview) extras.getSerializable(Constants.CATEGORY_REVIEW);
+        setTitle(categoryReview.getTitle());
 
         loadFragment();
 
@@ -85,12 +77,7 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
 
         categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
         categoryReviewListView = findViewById(R.id.categoryList);
-        if (getDatabasePath(AppDatabase.DATABASE_NAME).exists()){
-            populate();
-        } else {
-            Log.i(TAG, "Creating database for new user");
-            initialize();
-        }
+        populate();
 
         addListeners();
 
@@ -104,12 +91,7 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
     }
 
     public void populate(){
-        LiveData<List<CategoryReview>> liveCategoryReviews;
-        if (categoryReview != null) {
-            liveCategoryReviews = categoryReviewDao.getCategoryReviewsForParent(categoryReview.getId());
-        } else {
-            liveCategoryReviews = categoryReviewDao.getRootCategoryReviews();
-        }
+        LiveData<List<CategoryReview>> liveCategoryReviews = categoryReviewDao.getCategoryReviewsForParent(categoryReview.getId());
         liveCategoryReviews.observe(this, new Observer<List<CategoryReview>>() {
             @Override
             public void onChanged(@Nullable List<CategoryReview> loadedCategoryReviews) {
@@ -121,11 +103,6 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
                 }
             }
         });
-    }
-
-    public void initialize(){
-        new AsyncTaskInsert(CategoryReviewActivity.this).execute(new CategoryReview("Books", null, true, false, null));
-        populate();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -271,8 +248,7 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
     }
 
     void setFragmentBoundaries(int top) {
-        categoryReviewView = findViewById(R.id.category_review_fragment);
-        originalFragmentY = top + categoryReviewView.getHeight();
+        originalFragmentY = top + findViewById(R.id.category_review_fragment).getHeight();
         fragmentBottom = top;
     }
 
@@ -287,37 +263,6 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
     @Override
     public void finishActivity(){
         finish();
-    }
-
-    private static class AsyncTaskInsert extends AsyncTask<CategoryReview, Void, Boolean> {
-        private WeakReference<CategoryReviewActivity> categoryActivityWeakReference;
-
-        private AsyncTaskInsert(CategoryReviewActivity categoryReviewActivity) {
-            this.categoryActivityWeakReference = new WeakReference<>(categoryReviewActivity);
-        }
-
-        @Override
-        protected Boolean doInBackground(CategoryReview... categoryReview) {
-            try {
-                categoryActivityWeakReference.get().categoryReviewDao.insert(categoryReview[0]);
-            } catch (SQLiteException exception) {
-                Log.e(TAG, "Error Creating New Category", exception);
-                return false;
-            }
-
-            Log.i(TAG, "Created new category: " + categoryReview[0].getTitle());
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (!result) {
-                CategoryReviewActivity categoryReviewActivity = categoryActivityWeakReference.get();
-                if (categoryReviewActivity != null) {
-                    categoryReviewActivity.populate();
-                }
-            }
-        }
     }
 
 }

@@ -22,8 +22,8 @@ public interface CategoryReviewDao {
     @Delete
     void delete(CategoryReview categoryReview);
 
-    @Query("SELECT * FROM category_review where parent_id is null")
-    LiveData<List<CategoryReview>> getRootCategoryReviews();
+    @Query("SELECT * FROM category_review where id = :id")
+    LiveData<CategoryReview> getCategoryReview(int id);
 
     @Query("SELECT * FROM category_review where parent_id = :parentId")
     LiveData<List<CategoryReview>> getCategoryReviewsForParent(int parentId);
