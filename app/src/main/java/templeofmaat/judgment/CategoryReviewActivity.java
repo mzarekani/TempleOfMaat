@@ -1,6 +1,8 @@
 package templeofmaat.judgment;
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
@@ -91,7 +94,7 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
     }
 
     public void populate(){
-        LiveData<List<CategoryReview>> liveCategoryReviews = categoryReviewDao.getCategoryReviewsForParent(categoryReview.getId());
+        LiveData<List<CategoryReview>> liveCategoryReviews = categoryReviewDao.getCategoryReviews(categoryReview.getId());
         liveCategoryReviews.observe(this, new Observer<List<CategoryReview>>() {
             @Override
             public void onChanged(@Nullable List<CategoryReview> loadedCategoryReviews) {
@@ -148,6 +151,29 @@ public class CategoryReviewActivity extends AppCompatActivity implements Categor
             menu.add(getString(R.string.category_delete));
         }
 
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setQueryHint(getString(R.string.search_hint) + " " +  categoryReview.getTitle());
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent searchIntent = new Intent(CategoryReviewActivity.this, SearchActivity.class);
+                searchIntent.putExtra(SearchManager.QUERY, query);
+                searchIntent.putExtra(Constants.PARENT_ID, categoryReview.getId());
+                searchIntent.setAction(Intent.ACTION_SEARCH);
+                startActivity(searchIntent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String s) {
+                return false;
+            }
+        });
         return true;
     }
 

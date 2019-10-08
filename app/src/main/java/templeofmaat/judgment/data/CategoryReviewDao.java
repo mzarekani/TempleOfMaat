@@ -26,8 +26,11 @@ public interface CategoryReviewDao {
     LiveData<CategoryReview> getCategoryReview(int id);
 
     @Query("SELECT * FROM category_review where parent_id = :parentId")
-    LiveData<List<CategoryReview>> getCategoryReviewsForParent(int parentId);
+    LiveData<List<CategoryReview>> getCategoryReviews(int parentId);
 
     @Query("SELECT * FROM category_review where title like :title")
-    LiveData<List<CategoryReview>> getCategoryReviewsForName(String title);
+    LiveData<List<CategoryReview>> getCategoryReviews(String title);
+
+    @Query("SELECT * FROM category_review where parent_id = :parentId AND title like :title")
+    LiveData<List<CategoryReview>> getCategoryReviews(int parentId, String title);
 }

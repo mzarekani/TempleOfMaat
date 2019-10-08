@@ -11,22 +11,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import java.util.List;
 
 import templeofmaat.judgment.data.AppDatabase;
 import templeofmaat.judgment.data.CategoryReview;
+import templeofmaat.judgment.data.CategoryReviewDao;
 
 
 public class SearchActivity extends AppCompatActivity {
-    private AppDatabase db;
+    private CategoryReviewDao categoryReviewDao;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        db = AppDatabase.getAppDatabase(this);
+        categoryReviewDao = AppDatabase.getAppDatabase(this).categoryReviewDao();
 
         loadReviewEssentials(getIntent());
     }
@@ -40,7 +40,15 @@ public class SearchActivity extends AppCompatActivity {
     private void loadReviewEssentials(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String title = "%" + intent.getStringExtra(SearchManager.QUERY) + "%";
-            LiveData<List<CategoryReview>> liveCategoryReviews = db.categoryReviewDao().getCategoryReviewsForName(title);
+            LiveData<List<CategoryReview>> liveCategoryReviews;
+
+            if (intent.getExtras() != null && intent.getExtras().containsKey(Constants.PARENT_ID)) {
+                liveCategoryReviews = categoryReviewDao.getCategoryReviews(intent.getExtras()
+                        .getInt(Constants.PARENT_ID), title);
+            } else {
+                liveCategoryReviews = categoryReviewDao.getCategoryReviews(title);
+            }
+
             liveCategoryReviews.observe(this, new Observer<List<CategoryReview>>() {
                 @Override
                 public void onChanged(List<CategoryReview> categoryReviews) {
@@ -50,10 +58,6 @@ public class SearchActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    private String reverseTitle(String title) {
-        return new StringBuilder(title).reverse().toString();
     }
 
     private void populate(final List<CategoryReview> categoryReviews) {
